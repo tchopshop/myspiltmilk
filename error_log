@@ -1,0 +1,4 @@
+[13-Jun-2012 00:34:19 UTC] PHP Fatal error:  Cannot access empty property in /home/myspiltm/public_html/dev/modules/field/field.attach.inc on line 325
+[13-Jun-2012 00:34:27 UTC] PHP Fatal error:  Cannot access empty property in /home/myspiltm/public_html/dev/modules/field/field.attach.inc on line 325
+[13-Jun-2012 00:39:38 UTC] PHP Fatal error:  Cannot access empty property in /home/myspiltm/public_html/dev/modules/field/field.attach.inc on line 325
+[13-Jun-2012 16:47:25 UTC] PHP Fatal error:  Call to undefined function panopoly_wysiwyg_filter_process_format() in /home/myspiltm/public_html/dev/includes/form.inc on line 1780

@@ -1,0 +1,112 @@
+<?php
+
+/**
+ * @file
+ * Declares Views API version. And adds CSS.
+ */
+
+/**
+ * Implementation of hook_views_api().
+ */
+function freepager_views_api() {
+  return array(
+    'api' => '3.0',
+  );
+}
+
+function freepager_settings() {
+  return array(
+    'path' => array(
+      'label' => t('Field containing path'),
+      'description' => t("Select the field containing the paths managed by this pager. Field could contain something on the form 'node/[nid]'."),
+    ),
+    'previous' => array(
+      'label' => t("Field for 'previous'"),
+      'description' => t('Select the field containing data used for linking to previous item.'),
+    ),
+    'current' => array(
+      'label' => t("Field for 'current'"),
+      'description' => t('Select the field containing data used for showing the currently viewed item.'),
+    ),
+    'next' => array(
+      'label' => t("Field for 'next'"),
+      'description' => t('Select the field containing data used for linking to next item.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function freepager_preprocess_views_freepager(&$vars) {
+  // Let's get some of the data we will need.
+  $view = &$vars['view'];
+  $fields = array_keys(freepager_settings());
+  foreach($fields as $field) {
+    $field_names[$field] = $vars['view']->display_handler->options[$field];
+  }
+
+  $current_path = implode('/', arg());
+
+  // Let's go see if we're looking at a page matching the provided paths.
+  foreach (array_keys($view->result) as $row_number) {
+
+    // Check if the path in the view is the same as we're viewing.
+    $rendered_path = $view->render_field($field_names['path'], $row_number);
+    if ($rendered_path == $current_path) {
+
+      if ($field_names['previous']) {
+      	_freepager_render_req_fields($view, $row_number - 1);
+        $vars['previous'] = $view->render_field($field_names['previous'], $row_number - 1);
+        $vars['previous_linked'] = l($vars['previous'], $view->render_field($field_names['path'], $row_number - 1), array('html' => TRUE));
+      }
+      if ($field_names['current']) {
+      	_freepager_render_req_fields($view, $row_number);
+        $vars['current'] = $view->render_field($field_names['current'], $row_number);
+        $vars['current_linked'] = l($vars['current'], $view->render_field($field_names['path'], $row_number), array('html' => TRUE));
+      }
+      if ($field_names['next']) {
+      	_freepager_render_req_fields($view, $row_number + 1);
+        $vars['next'] = $view->render_field($field_names['next'], $row_number + 1);
+        $vars['next_linked'] = l($vars['next'], $view->render_field($field_names['path'], $row_number + 1), array('html' => TRUE));
+      }
+      $vars['row_number'] = $row_number;
+      $vars['total_rows'] = count($view->result);
+      
+      // If we found a path match, there is no need to look for another one.
+      // Let's break to save a few clock cycles.
+      return;
+    }
+  }
+
+  // If we got this far, no match against current path was found. Let's indicate
+  // this for use later on.
+  $vars['view']->display_handler->no_path_match = TRUE;
+}
+
+/**
+ * Internal function
+ * 
+ * Prepare *all* the fields in this row – there may be token replacement 
+ * patterns required by the fields we use. And also prepare the fields
+ * in the previous and next rows.
+ */
+function _freepager_render_req_fields($view, $row_to_render){
+	
+	foreach(array_keys($view->display_handler->get_field_labels()) as $field_name) {
+		$view->render_field($field_name, $row_to_render);
+	}
+	
+}
+
+/**
+ * Implements hook_views_post_render().
+ */
+function freepager_views_post_render(&$view, &$output, &$cache) {
+  // If we didn't find a match against the current path, there will still be
+  // result fetched from the view. To prevent an empty block from being rendered
+  // we tweak this result.
+  if (isset($view->display_handler->no_path_match) && $view->display_handler->no_path_match) {
+    $view->result = FALSE;
+  }
+}

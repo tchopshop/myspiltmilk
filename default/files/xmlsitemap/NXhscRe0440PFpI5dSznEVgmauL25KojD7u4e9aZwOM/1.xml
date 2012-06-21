@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/myspiltmilk/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>http://localhost:8888/myspiltmilk/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+<url><loc>http://localhost:8888/myspiltmilk/test</loc><lastmod>2012-06-11T12:18Z</lastmod><changefreq>daily</changefreq></url>
+<url><loc>http://localhost:8888/myspiltmilk/abbas-ad-defui-pagus-suscipere</loc><lastmod>2012-06-09T11:54Z</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>http://localhost:8888/myspiltmilk/aliquip-antehabeo-loquor-refero-virtus</loc><lastmod>2012-06-08T14:12Z</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>http://localhost:8888/myspiltmilk/fere-quae</loc><lastmod>2012-06-11T12:10Z</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>http://localhost:8888/myspiltmilk/lenis-molior-saluto</loc><lastmod>2012-06-05T23:37Z</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>http://localhost:8888/myspiltmilk/eros-euismod-gravis-macto-valde</loc><lastmod>2012-06-05T23:37Z</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>http://localhost:8888/myspiltmilk/dolus-luptatum-neque-olim-praesent-suscipere</loc><lastmod>2012-06-10T21:07Z</lastmod><changefreq>weekly</changefreq></url>
+</urlset>

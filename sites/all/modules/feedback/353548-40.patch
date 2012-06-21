@@ -1,0 +1,338 @@
+diff --git a/feedback.module b/feedback.module
+index 9e0f5e9..796165e 100644
+--- a/feedback.module
++++ b/feedback.module
+@@ -515,6 +515,235 @@ function feedback_user_delete($account) {
+ }
+ 
+ /**
++ * Implements hook_action_info().
++ */
++function feedback_action_info() {
++  return array(
++    'feedback_process_action' => array(
++      'label' => t('Process entry'),
++      'type' => 'feedback',
++      'configurable' => FALSE,
++      'behavior' => array('changes_property'),
++      'triggers' => array('feedback_insert', 'feedback_update'),
++    ),
++    'feedback_open_action' => array(
++      'label' => t('Open entry'),
++      'type' => 'feedback',
++      'configurable' => FALSE,
++      'behavior' => array('changes_property'),
++      'triggers' => array('feedback_insert', 'feedback_update'),
++    ),
++    'feedback_delete_action' => array(
++      'label' => t('Delete entry'),
++      'type' => 'feedback',
++      'configurable' => FALSE,
++      'triggers' => array('feedback_insert', 'feedback_update'),
++    ),
++    'feedback_send_email_action' => array(
++      'label' => t('Send e-mail of feedback'),
++      'type' => 'feedback',
++      'configurable' => TRUE,
++      'triggers' => array('feedback_insert', 'feedback_update'),
++    ),
++  );
++}
++
++/**
++* Implements hook_trigger_info().
++*/
++function feedback_trigger_info() {
++  return array(
++    'feedback' => array(
++      'feedback_insert' => array(
++        'label' => t('New feedback is added.'),
++      ),
++      'feedback_update' => array(
++        'label' => t('Feedback is marked processed or open.'),
++      ),
++    ),
++  );
++}
++
++/**
++ * Implements hook_feedback_insert().
++ */
++function feedback_feedback_insert($entry) {
++  $aids = trigger_get_assigned_actions('feedback_insert');
++  if (!$aids) {
++    return;
++  }
++
++  $context = array(
++    'group' => 'feedback',
++    'hook' => 'feedback_insert',
++  );
++
++  foreach ($aids as $aid => $info) {
++    actions_do($aid, $entry, $context);
++  }
++}
++
++/**
++ * Implements hook_feedback_update().
++ */
++function feedback_feedback_update($entry) {
++  $aids = trigger_get_assigned_actions('feedback_update');
++  if (!$aids) {
++    return;
++  }
++
++  $context = array(
++    'group' => 'feedback',
++    'hook' => 'feedback_update',
++  );
++
++  foreach ($aids as $aid => $info) {
++    actions_do($aid, $entry, $context);
++  }
++}
++
++/**
++ * Sets the status of an entry to processed.
++ *
++ * @ingroup actions
++ */
++function feedback_process_action($entry, $context) {
++  $entry->status = FEEDBACK_PROCESSED;
++  drupal_write_record('feedback', $entry, 'fid');
++}
++
++/**
++ * Sets the status of an entry to open.
++ *
++ * @ingroup actions
++ */
++function feedback_open_action($entry, $context) {
++  $entry->status = FEEDBACK_OPEN;
++  drupal_write_record('feedback', $entry, 'fid');
++}
++
++/**
++ * Deletes a feedback entry.
++ *
++ * @ingroup actions
++ */
++function feedback_delete_action($entry, $context) {
++  feedback_delete($entry->fid);
++}
++
++/**
++ * Return a form definition so the Feedback send email action can be configured.
++ *
++ * @param $context
++ *   Default values (if we are editing an existing action instance).
++ * @return
++ *   Form definition.
++ */
++function feedback_send_email_action_form($context = array()) {
++  // Set default values for form.
++  $context = array(
++   'recipients' => '',
++   'subject' => '',
++   'message' => '',
++  );
++
++  $form['recipients'] = array(
++    '#type' => 'textarea',
++    '#title' => t('Recipients'),
++    '#default_value' => $context['recipients'],
++    '#description' => t("Example: 'webmaster@example.com' or 'dev@example.com,support@example.com'. To specify multiple recipients, separate each e-mail address with a comma."),
++    '#required' => TRUE,
++  );
++  $form['subject'] = array(
++    '#type' => 'textfield',
++    '#title' => t('Subject'),
++    '#default_value' => $context['subject'],
++    '#maxlength' => '254',
++    '#description' => t('The subject of the message.'),
++    '#required' => TRUE,
++  );
++  $form['message'] = array(
++    '#type' => 'textarea',
++    '#title' => t('Message'),
++    '#default_value' => $context['message'],
++    '#cols' => '80',
++    '#rows' => '20',
++    '#description' => t('The message that should be sent. You may include the following variables: !uid, !username, !usermail, !useragent (of the user who gave the feedback), !site_name, !status, !message, !url, !date.'),
++    '#required' => TRUE,
++  );
++  return $form;
++}
++
++/**
++ * Validate the send e-mail action form submission.
++ */
++function feedback_send_email_action_validate($form, &$form_state) {
++  if (empty($form_state['values']['recipients'])) {
++    form_set_error('recipients', t('You must enter one or more recipients.'));
++  }
++  else {
++    $recipients = explode(',', $form_state['values']['recipients']);
++    foreach ($recipients as $recipient) {
++      if (!valid_email_address(trim($recipient))) {
++        form_set_error('recipients', t('%recipient is an invalid e-mail address.', array('%recipient' => $recipient)));
++      }
++    }
++  }
++}
++
++/**
++ * Process the send e-mail action form submission.
++ */
++function feedback_send_email_action_submit($form, $form_state) {
++  // Process the HTML form to store configuration. The keyed array that
++  // we return will be serialized to the database.
++  $params = array(
++    'recipients' => $form_state['values']['recipients'],
++    'subject'    => $form_state['values']['subject'],
++    'message'    => $form_state['values']['message'],
++  );
++  return $params;
++}
++
++/**
++ * Implements the feedback send e-mail action.
++ */
++function feedback_send_email_action($entry, $context) {
++  $account = user_load($entry->uid);
++  $from = variable_get('site_name', 'Drupal') . ' <' . variable_get('site_mail', '') . '>';
++  $params = array('entry' => $entry, 'account' => $account, 'context' => $context);
++  // Send the e-mail to the recipients using the site default language.
++  drupal_mail('feedback', 'send_email_action', $context['recipients'], language_default(), $params, $from);
++  watchdog('feedback', 'Feedback information sent to %recipients', array('%recipients' => $context['recipients']));
++}
++
++/**
++ * Implements hook_mail().
++ */
++function feedback_mail($key, &$message, $params) {
++  $language = $message['language'];
++  $entry = $params['entry'];
++  $account = $params['account'];
++  $context = $params['context'];
++  $variables = array(
++    '!site_name' => variable_get('site_name', 'Drupal'),
++    '!uid' => $account->uid,
++    '!username' => $account->name ? $account->name : t('Anonymous'),
++    '!usermail' => $account->mail ? $account->mail : t('unknown'),
++    '!status' => $entry->status ? t('Processed') : t('Open'),
++    '!message' => $entry->message,
++    '!url' => url($entry->location, array('absolute' => TRUE, 'language' => $language)),
++    '!useragent' => $entry->useragent,
++    '!date' => format_date($entry->timestamp, 'small', '', NULL, $language->language),
++  );
++  $subject = strtr($context['subject'], $variables);
++  $body = strtr($context['message'], $variables);
++  $message['subject'] .= str_replace(array("\r", "\n"), '', $subject);
++  $message['body'][] = drupal_html_to_text($body);
++}
++
++
++/**
+  * Implements hook_mollom_form_list().
+  */
+ function feedback_mollom_form_list() {
+diff --git a/tests/feedback.test b/tests/feedback.test
+index 4d4244c..09ce922 100644
+--- a/tests/feedback.test
++++ b/tests/feedback.test
+@@ -20,8 +20,7 @@ class FeedbackTestCase extends DrupalWebTestCase {
+   }
+ 
+   function setUp() {
+-    // @todo Remove soft-dependency on Block.
+-    parent::setUp(array('block', 'feedback'));
++    parent::setUp(array('feedback', 'trigger'));
+ 
+     $this->admin_user = $this->drupalCreateUser(array('access feedback form', 'view feedback messages', 'administer feedback'));
+     $this->web_user = $this->drupalCreateUser(array('access feedback form'));
+@@ -49,7 +48,7 @@ class FeedbackTestCase extends DrupalWebTestCase {
+     $edit = array(
+       'feedback-messages[0][1]' => TRUE,
+     );
+-    $this->drupalPost(NULL, $edit, t('Submit'));
++    $this->drupalPost(NULL, $edit, t('Update'));
+     $this->assertFieldByName('feedback-messages[1][1]', 1, t('Processed message found.'));
+   }
+ 
+@@ -89,4 +88,72 @@ class FeedbackTestCase extends DrupalWebTestCase {
+     $this->assertNoLinkByHref('admin/reports/feedback/1/delete');
+     $this->assertNoRaw(check_plain($message), t('Message not found.'));
+   }
+-}
++
++  /**
++   * Test the feedback triggers and actions.
++   */
++  function testFeedbackEmailAction() {
++    $test_user = $this->drupalCreateUser(array('administer actions', 'administer feedback', 'access feedback form'));
++    $this->drupalLogin($test_user);
++    $this->assignFeedbackEmailAction('feedback_insert', $test_user->mail);
++
++    // Insert a feedback entry.
++    $message = $this->randomString();
++    $edit = array(
++      'message' => $message,
++    );
++    $this->drupalPost('node', $edit, t('Send feedback'));
++    $this->assertFeedbackEmailTokenReplacement($test_user->mail, $message);
++
++    $this->assignFeedbackEmailAction('feedback_update', $test_user->mail);
++
++    // Update a feedback entry.
++    $fid = db_query("SELECT fid FROM {feedback} LIMIT 0,1")->fetchField();
++    $entry = feedback_load($fid);
++    feedback_save($entry);
++    $this->assertFeedbackEmailTokenReplacement($test_user->mail, $entry->message);
++  }
++
++  /**
++   * Assigns a system_send_email_action to the passed-in trigger.
++   *
++   * @param $trigger
++   *   For example, 'user_login'
++   */
++  function assignFeedbackEmailAction($trigger, $mail) {
++    $form_name = "trigger_{$trigger}_assign_form";
++    $form_html_id = strtr($form_name, '_', '-');
++
++    $edit = array(
++      'actions_label' => $trigger . "_feedback_send_email_action",
++      'recipients' => $mail,
++      'subject' => $this->randomName(),
++      'message' => '!message',
++    );
++
++    $hash = drupal_hash_base64('feedback_send_email_action');
++    $this->drupalPost("admin/config/system/actions/configure/$hash", $edit, t('Save'));
++    $this->assertText(t('The action has been successfully saved.'));
++
++    // Now we have to find out the action ID of what we created.
++    $aid = db_query('SELECT aid FROM {actions} WHERE callback = :callback AND label = :label', array(':callback' => 'feedback_send_email_action', ':label' => $edit['actions_label']))->fetchField();
++
++    $edit = array('aid' => drupal_hash_base64($aid));
++    $this->drupalPost('admin/structure/trigger/feedback', $edit, t('Assign'), array(), array(), $form_html_id);
++  }
++
++
++  /**
++   * Asserts correct token replacement for the given trigger and account.
++   *
++   * @param $account
++   *   The user account which triggered the action.
++   * @param $email_depth
++   *   Number of emails to scan, starting with most recent.
++   */
++  function assertFeedbackEmailTokenReplacement($mail, $message, $email_depth = 1) {
++    $this->verboseEmail($email_depth);
++    $this->assertMailString('body', $message, $email_depth);
++    $this->assertMail('to', $mail, t('Mail sent to correct destination'));
++  }
++}
+\ No newline at end of file

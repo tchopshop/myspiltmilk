@@ -1,0 +1,145 @@
+<?php
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function local_tasks_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+//dsm($data);
+//dsm($router_item);
+//dsm($root_path);
+  global $user;
+
+  // assign active_type if view has a content type filter
+  $active_type = FALSE;
+  if((arg(0) != 'admin') && isset($router_item['page_callback']) &&  ($router_item['page_callback'] == 'views_page')) {
+    //$view = views_page($router_item['page_arguments'][0], $router_item['page_arguments'][0]);
+    $view = views_get_view($router_item['page_arguments'][0]);
+    $tfilter = FALSE; 
+//dsm($view);
+    if (isset($view->display['default']->display_options['filters']['type'])) {
+      $tfilter = $view->display['default']->display_options['filters']['type'];
+    }
+    $display = $router_item['page_arguments'][1];
+    if (is_array($display)) {
+      $display = array_shift($display);
+    }
+    if (isset($view->display[$display]->display_options['filters']['type'])) {
+      $tfilter = $view->display[$display]->display_options['filters']['type'];
+    }
+    if ($tfilter) {
+      if (($tfilter['table'] == 'node')) {
+        if (!isset($tfilter['operator']) || ($tfilter['operator'] == 'in')) {
+          $active_type = array_shift($tfilter['value']);
+        }
+      }
+    }
+  }
+  
+  // set active_type if base view
+  if (($root_path == 'nodes' || $root_path == 'node')) {
+    $active_type = arg(1);
+  }
+  // set active_type if base view
+  if (($user->uid > 0) && ($root_path == 'node/%')) {
+  	$node = node_load(arg(1));
+    $active_type = $node->type;
+  }
+
+  
+  if ($active_type) {
+    $type = node_type_load($active_type);
+    if (!isset($type->name)) {
+      return;
+    }
+    $content_name = strtolower($type->name);
+    $item = menu_get_item('node/add/' . str_replace('_', '-', $active_type));
+
+    if ($item['access']) {
+      $item['title'] = t('Add @type_name', array('@type_name' => strtolower($content_name)));
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+    $href = 'admin/content/node/' . $active_type;
+    $item = menu_get_item($href);
+//dsm($item);
+    if ($item['access']) {
+      $item['href'] = $href;
+      $item['title'] = t('Administer @type_name', array('@type_name' => $content_name));
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+  }
+
+  
+  
+  if ($root_path == 'admin/content' || (strpos($root_path, 'admin/content/node') === 0)) {
+   	$custom_view = ($root_path != 'admin/content') ? TRUE : FALSE;
+    $active_type = arg(3);
+    // if active type, clear + add content action
+    if (isset($active_type)) {
+    	unset($data['actions']['output'][0]);
+    }
+    $types = node_type_get_names();
+    // add contextual add content type link
+    if (isset($active_type) && $active_type) {
+      $type_name = strtolower($types[$active_type]);
+      $item = menu_get_item('node/add/' . str_replace('_', '-', $active_type));
+      $item['title'] = t('Add @type_name', array('@type_name' => $type_name));
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+    // add all sub-tab if on content to trigger display of subtabs on some themes (e.g. Rubik)
+    $href = 'admin/content/node';
+    $item = menu_get_item($href);    
+    if ($item['access']) {
+      $item['href'] = $href;
+      $item['title'] = ' ' . t('All');
+      $output = array(
+        '#theme' => 'menu_local_task',
+        '#link' => $item,
+      );
+      if (!isset($active_type)) {
+        $output['#active'] = TRUE;
+      }
+      $data['tabs'][1]['output'][] = $output; 
+    }  
+    // add sub-tabs for content types
+    $count = count($types) + 1;
+    $data['tabs'][1]['count'] = $count;
+    $i = 0;
+    foreach ($types AS $type => $name) {
+      $href = 'admin/content/node/' . $type;
+      $item = menu_get_item($href);
+      // if custom admin view exists for content type, skip adding sub-tab
+      if ($item['path'] != 'admin/content/node') {
+        continue;
+      }
+  //dsm($item);
+      if ($item['access']) {
+        $item['href'] = $href;
+        $item['title'] = $name;
+        $output = array(
+            '#theme' => 'menu_local_task',
+            '#link' => $item,
+        );
+        if ($type == $active_type) {
+          $output['#active'] = TRUE;
+        }
+        $data['tabs'][1]['output'][] = $output;
+      }
+      $i++;
+    } 
+    usort($data['tabs'][1]['output'], 'local_tasks_content_sort_tabs'); 
+  } 
+//dsm($data);
+}
+
+function local_tasks_content_sort_tabs($a, $b) {
+  return strnatcmp($a['#link']['title'], $b['#link']['title']);
+}

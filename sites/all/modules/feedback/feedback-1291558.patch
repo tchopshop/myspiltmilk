@@ -1,0 +1,248 @@
+diff --git sites/all/modules/feedback/feedback-form-display.tpl.php sites/all/modules/feedback/feedback-form-display.tpl.php
+index 9d651a5..a39402e 100644
+--- sites/all/modules/feedback/feedback-form-display.tpl.php
++++ sites/all/modules/feedback/feedback-form-display.tpl.php
+@@ -1,5 +1,6 @@
+ <?php
+ 
++
+ /**
+  * @file
+  * Default theme implementation to present the feedback form.
+@@ -9,5 +10,8 @@
+ ?>
+ <div id="block-feedback-form">
+   <h2><span class="feedback-link"><?php print $title; ?></span></h2>
+-  <div class="content"><?php print drupal_render($content); ?></div>
+-</div>
++  <div class="overlay"></div>
++  <div class="content">
++    <?php print drupal_render($content); ?>
++  </div>
++</div>
+\ No newline at end of file
+diff --git sites/all/modules/feedback/feedback.css sites/all/modules/feedback/feedback.css
+index 2185691..2166724 100644
+--- sites/all/modules/feedback/feedback.css
++++ sites/all/modules/feedback/feedback.css
+@@ -1,62 +1,115 @@
+-
+ /**
+  * Styles for the feedback form.
+  */
+ /* Reset commonly set styles */
+-#block-feedback-form,
+-#block-feedback-form .feedback-link,
+-#block-feedback-form .feedback-link *,
+-#block-feedback-form .content,
+-#block-feedback-form form {
+-  float: none;
++#block-feedback-form,#block-feedback-form .feedback-link,#block-feedback-form .feedback-link *,#block-feedback-form .content,#block-feedback-form form
++  {
+   margin: 0;
+   padding: 0;
+   border: 0;
+   font-size: 100%;
+   font-weight: normal;
+   color: inherit;
++}
++
++#block-feedback-form .overlay {
++  display: none;
++  position: fixed;
++  top: 0;
++  left: 0;
++  width: 100%;
++  height: 100%;
++  background: black;
++  opacity: 0.5;
++}
++
++#block-feedback-form #feedback-status-message {
++  position: fixed;
++  bottom: 10px;
++  left: 10px;
+ }
+ 
+-#block-feedback-form {
++#block-feedback-form div.content {
+   display: none;
+   position: fixed;
+-  bottom: 60px;
+-  right: 20px;
++  top: 0;
++  left: 0;
++  width: 100%;
++  height: 100%;
++  width: 100%;
++}
++
++#block-feedback-form a#close {
++  position: absolute;
++  cursor: pointer;
++  outline: none;
++  top: -22px;
++  left: -22px;
++  z-index: 4;
++  width: 42px;
++  height: 42px;
+   overflow: hidden;
+-  z-index: 10;
++  background-image: url(images/feedback-close.png);
+ }
+-/* IE6 seems to be unable to handle fixed */
+-* html #block-feedback-form {
+-  position: absolute;
++
++#block-feedback-form a#close:hover {
++  background-position: -42px 0;
++}
++
++#block-feedback-form form {
++  position: relative;
++  padding: 15px;
++  top: 35%;
++  width: 50%;
++  margin: 0 auto;
++  border: 2px solid #9EA3A9;
++  border-color: white #9EA3A9 #9EA3A9 white;
++  background-color: #FEFEFE;
++  border-radius: 8px;
+ }
++
+ #block-feedback-form .feedback-link {
+-  padding: 0.3em 0;
+-  text-align: right;
+-  font-size: 12px;
++  color: #ddd;
++  background: black;
++  border: 2px solid white;
++  border-top: 0px none transparent;
++  writing-mode: tb-rl;
++  -webkit-transform: rotate(-90deg);
++  -moz-transform: rotate(-90deg);
++  -o-transform: rotate(-90deg);
++  white-space: nowrap;
++  display: block;
++  font-size: 18px;
++  line-height: 20px;
++  font-weight: normal;
++  text-shadow: 0px 0px 1px #333;
++  padding: 8px;
++  position: fixed;
++  top: 45%;
++  left: -30px;
++}
++
++#block-feedback-form .feedback-link:hover {
++  color: white;
++  left: -25px;
++  -webkit-transition: all 0.1s ease-in;
+ }
++
+ #block-feedback-form .feedback-link * {
+   display: inline;
+   font-size: 12px;
+ }
+-#block-feedback-form form {
+-  border: 1px solid #ccc;
+-  padding: 6px;
+-  background-color: #fff;
+-  opacity: 0.9;
+-  max-width: 300px;
+-}
+-/* IE6 doesn't support max-width. */
+-* html #block-feedback-form form {
+-  width: 300px;
+-}
++
+ #block-feedback-form .feedback-help {
+   margin: 0 0 0.5em;
+-  font-size: 10px;
++  font-size: 12px;
+   line-height: normal;
+ }
++
+ #block-feedback-form .feedback-message {
+-  height: 10ex;
++  height: 15ex;
+ }
++
+ #block-feedback-form .ajax-progress .throbber {
+   background: transparent url(images/throbber.gif) no-repeat left center;
+   height: 16px;
+@@ -69,4 +122,4 @@
+ #block-feedback-form .feedback-submitted {
+   margin-top: 0.2em;
+   font-size: 10px;
+-}
++}
+\ No newline at end of file
+diff --git sites/all/modules/feedback/feedback.js sites/all/modules/feedback/feedback.js
+index 49549c8..ec80629 100644
+--- sites/all/modules/feedback/feedback.js
++++ sites/all/modules/feedback/feedback.js
+@@ -21,16 +21,11 @@
+     $('#block-feedback-form', context).once('feedback', function () {
+       var $block = $(this);
+       $block.find('span.feedback-link')
+-        .prepend('<span id="feedback-form-toggle">[ + ]</span> ')
+         .css('cursor', 'pointer')
+-        .toggle(function () {
++        .click(function () {
+             Drupal.feedbackFormToggle($block, false);
+-          },
+-          function() {
+-            Drupal.feedbackFormToggle($block, true);
+-          }
+-        );
+-      $block.find('form').hide();
++            $block.find('a#close').click(function() { Drupal.feedbackFormToggle($block, true); } );
++          });
+       $block.show();
+     });
+   }
+@@ -45,8 +40,11 @@
+     if (!$context.is('#feedback-status-message')) {
+       return;
+     }
+-    // Collapse the form.
+-    $('#block-feedback-form .feedback-link').click();
++    
++    // Close the form.
++    $block = $('#block-feedback-form');
++    Drupal.feedbackFormToggle($block, true);
++    	
+     // Blend out and remove status message.
+     window.setTimeout(function () {
+       $context.fadeOut('slow', function () {
+@@ -60,12 +58,13 @@
+  * Collapse or uncollapse the feedback form block.
+  */
+ Drupal.feedbackFormToggle = function ($block, enable) {
+-  $block.find('form').slideToggle('medium');
+   if (enable) {
+-    $('#feedback-form-toggle', $block).html('[ + ]');
++	$block.find('div.overlay').fadeOut('medium');
++	$block.find('div.content').hide();
+   }
+   else {
+-    $('#feedback-form-toggle', $block).html('[ &minus; ]');
++	$block.find('div.overlay').fadeIn('medium');
++	$block.find('div.content').show();
+   }
+ };
+ 
+diff --git sites/all/modules/feedback/feedback.module sites/all/modules/feedback/feedback.module
+index 9e0f5e9..b8638da 100644
+--- sites/all/modules/feedback/feedback.module
++++ sites/all/modules/feedback/feedback.module
+@@ -203,6 +203,8 @@
+   // Store the path on which this form is displayed.
+   $form['location'] = array('#type' => 'value', '#value' => $_GET['q']);
+ 
++  $form['close'] = array('#markup' => '<a href="#" id="close"></a>');
++  
+   $form['help'] = array(
+     '#prefix' => '<div class="feedback-help">',
+     '#markup' => t('If you experience a bug or would like to see an addition on the current page, feel free to leave us a message.'),

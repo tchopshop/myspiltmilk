@@ -1,0 +1,3 @@
+name = Local Tasks
+description = Add local tasks items for content types.
+core = 7.x

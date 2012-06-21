@@ -1,0 +1,13 @@
+/**
+ * @file
+ * Panels, AT Panels/GPanels
+ */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.panels\.scss}line{font-family:\00003133}}
+.panel-pane {
+  margin-bottom: 20px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.panels\.scss}line{font-family:\00003154}}
+.block-panels_mini {
+  padding: 0;
+}
