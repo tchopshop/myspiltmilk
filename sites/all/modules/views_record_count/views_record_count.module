@@ -1,0 +1,138 @@
+<?php
+
+/**
+ * @file
+ * display record count in header or footer if pager is implemented
+ * in view's display.
+ *
+ * This module also has overridden feature. The main entry
+ * point of this module is views_record_count_form_alter(), where it add the
+ * views record count and message region selector with default values and its
+ * submit handler attached. If overridden values are being used in the view, in
+ * form alter hook there is an overridden handler also. So that they will be
+ * reflected in multiple display such as page, block, default etc.
+ *
+ */
+
+/**
+ * Implements hook_views_post_execute().
+ */
+function views_record_count_views_post_execute(&$view) {//print_r($view->display_handler);exit;
+  $my_total = $view->total_rows;
+  if (empty($my_total)) {
+    $my_total = 0;
+  }
+
+  $display = $view->display_handler->display->display_options;
+  $pager = $view->display_handler->handlers['field']['name']->query->pager;
+
+  if (isset($pager) && ($pager instanceof views_plugin_pager_full || $pager instanceof views_plugin_pager_mini) && isset($display['views_record_count']) && $display['views_record_count'] == 'yes') {
+    drupal_add_css(drupal_get_path('module', 'views_record_count') . "/css/views-record-count.css");
+    $message = '<p><strong>' . format_plural($my_total, '@count record', '@count records') . t(' found.') . '</strong></p>';
+    $message_location = $display['views_record_count_region'] ? $display['views_record_count_region'] : 'footer';
+    $view->add_item('default', $message_location, 'views', 'area', array('content' => $message, 'format' => 'full_html'));
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function views_record_count_form_views_ui_edit_display_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_state['section'] == 'pager') {
+    $view = &$form_state['view'];
+    $display_id = $form_state['display_id'];
+    $display = &$view->display[$display_id];
+    $form['options'] += views_record_count_options($display);
+    $form['buttons']['#weight'] = 10;
+    $form['buttons']['submit']['#submit'] = array('views_record_count_submission');
+    if (isset($form['override']['button']['#submit'])) {
+      $form['override']['button']['#submit'] = array('views_record_count_override_submission');
+    }
+    $js = '<script type="text/javascript">
+              $(document).ready(function () {
+                $("input[name=views_record_count]").click(function(){
+                  if($(this).val() == "yes") {
+                    $("#views-record-count-region").slideDown("slow");
+                  }
+                  else {
+                    $("#views-record-count-region").slideUp("slow");
+                  }
+                });
+              });</script>';
+    $form['js'] = array('#value' => $js);
+  }
+}
+
+/**
+ * function to get views record count options
+ *
+ * @param object $display
+ *   This is the display object
+ *
+ * @return array
+ *   a form element array
+ */
+function views_record_count_options($display) {
+  $form = array();
+  $views_record_count = $display->handler->get_option('views_record_count');
+  $views_record_count_default = $views_record_count ? $views_record_count : 'no';
+  $views_record_count_options = array(
+    'yes' => t('Yes'),
+    'no' => t('No'),
+  );
+  $form['views_record_count'] = array(
+    '#type' => 'radios',
+    '#title' => t('Display Record Count'),
+    '#options' => $views_record_count_options,
+    '#default_value' => $views_record_count_default,
+    '#weight' => 1,
+  );
+  $views_record_count_region = $display->handler->get_option('views_record_count_region');
+  $views_record_count_region_default = $views_record_count_region ? $views_record_count_region : 'footer';
+  $views_record_count_region_options = array(
+    'header' => t('Header'),
+    'footer' => t('Footer'),
+  );
+  if ($views_record_count_default == 'yes') {
+    $region_visibility = 'show';
+  }
+  else {
+    $region_visibility = 'hide';
+  }
+  $form['views_record_count_region'] = array(
+    '#type' => 'radios',
+    '#title' => t('Choose Region for Record Count Message'),
+    '#options' => $views_record_count_region_options,
+    '#default_value' => $views_record_count_region_default,
+    '#weight' => 2,
+    '#prefix' => '<div id="views-record-count-region" class="' . $region_visibility . '">',
+    '#suffix' => '</div>',
+  );
+  return $form;
+}
+
+/**
+ * Submit handler for views record count form.
+ */
+function views_record_count_submission(&$form, &$form_state) {
+  $display = &$form_state['view']->display[$form_state['display_id']];
+
+  $views_record_count = $form_state['values']['views_record_count'];
+  $views_record_count_region = $form_state['values']['views_record_count_region'];
+  $display->handler->set_option('views_record_count', $views_record_count);
+  $display->handler->set_option('views_record_count_region', $views_record_count_region);
+  $display->handler->options_submit($form, $form_state);
+  views_ui_cache_set($form_state['view']);
+}
+
+/**
+ * Override handler for views record count form.
+ */
+function views_record_count_override_submission(&$form, &$form_state) {
+  $display = &$form_state['view']->display[$form_state['display_id']];
+  $display->handler->options_override($form, $form_state);
+
+  views_ui_cache_set($form_state['view']);
+  $form_state['rerender'] = TRUE;
+  $form_state['rebuild'] = TRUE;
+}

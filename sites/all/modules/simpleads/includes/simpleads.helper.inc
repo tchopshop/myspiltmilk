@@ -223,6 +223,18 @@ function _simpleads_delete_impression($node) {
 }
 
 /**
+ * Helper procedure.
+ * Deletes aggregates stats.
+ *
+ * @param int $nid
+ */
+function _simpleads_delete_aggregated($node) {
+  db_delete('simpleads_stats')
+  ->condition('nid', $node->nid)
+  ->execute();
+}
+
+/**
  * Helper functon.
  * Increases impressions counter.
  *
@@ -240,7 +252,7 @@ function _simpleads_increase_impression($node) {
  * @return boolean
  */
 function _simpleads_bot_detect() {
-  if (preg_match('/bot|crawl|slurp|spider/i', $_SERVER['HTTP_USER_AGENT'])) {
+  if (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/bot|crawl|slurp|spider/i', $_SERVER['HTTP_USER_AGENT'])) {
     return TRUE;
   }
   else {
@@ -267,19 +279,21 @@ function _simpleads_activate_deactive_ad($node, $who = 'cron') {
     $end_time = $node->field_ad_end_date[$node->language][0]['value'];
   }
 
+  $current_status = _simpleads_get_node_status($node->nid);
+
   $start_time = (int)strtotime($start_time);
   $end_time = (int)strtotime($end_time);
 
   $now = REQUEST_TIME;
 
   if ($start_time != '' && $end_time != '') {
-    if ($now >= $start_time && $end_time > $now) {
+    if ($now >= $start_time && $end_time > $now && $current_status == 0) {
       $node->status = 1;
       if ($who == 'cron') {
         node_save($node);
       }
     }
-    elseif ($end_time <= $now) {
+    elseif ($end_time <= $now && $current_status == 1) {
       $node->status = 0;
       if ($who == 'cron') {
         node_save($node);
@@ -287,7 +301,7 @@ function _simpleads_activate_deactive_ad($node, $who = 'cron') {
     }
   }
   elseif ($start_time == '' && $end_time != '') {
-    if ($end_time <= $now) {
+    if ($end_time <= $now && $current_status == 1) {
       $node->status = 0;
       if ($who == 'cron') {
         node_save($node);
@@ -301,7 +315,7 @@ function _simpleads_activate_deactive_ad($node, $who = 'cron') {
     }
   }
   else {
-    if ($now >= $start_time && $start_time != '') {
+    if ($now >= $start_time && $start_time != '' && $current_status == 0) {
       $node->status = 1;
       if ($who == 'cron') {
         node_save($node);
@@ -410,7 +424,7 @@ function _simpleads_ads_listing_query($filter = array()) {
 function _simpleads_validate_url($url) {
   if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
     // Allow internal url if user has access to it.
-    if (drupal_valid_path($url)) {
+    if (drupal_valid_path(drupal_get_normal_path($url))) {
       $url = url($url, array('absolute' => TRUE));
     }
     else {
@@ -423,6 +437,45 @@ function _simpleads_validate_url($url) {
   return $url;
 }
 
+/**
+ * Helper function.
+ * Hide field from simpleads node form if some other module disabled,
+ * but not uninstalled yet.
+ * See hook_simpleads_form().
+ *
+ * @param string $field_name
+ */
+function _simpleads_hide_field($field_name) {
+  $fields_to_hide = variable_get('simpleads_form_alter', array());
+  $new_array = array();
+  if (count($fields_to_hide)) {
+    foreach ($fields_to_hide as $field) {
+      $new_array[$field] = $field;
+    }
+  }
+  $new_array[$field_name] = $field_name;
+  variable_set('simpleads_form_alter', $new_array);
+}
+
+/**
+ * Helper function.
+ * Show field in simpleads node form if other module is enabled.
+ * See hook_simpleads_form().
+ *
+ * @param string $field_name
+ */
+function _simpleads_show_field($field_name) {
+  $fields_to_hide = variable_get('simpleads_form_alter', array());
+  $new_array = array();
+  if (count($fields_to_hide)) {
+    foreach ($fields_to_hide as $field) {
+      if ($field != $field_name) {
+        $new_array[$field] = $field;
+      }
+    }
+  }
+  variable_set('simpleads_form_alter', $new_array);
+}
 /**
  * Helper function.
  */
@@ -438,4 +491,16 @@ function _simpleads_theme_attributes_init($vars) {
     $vars['css_attributes'] = '';
   }
   return $vars;
+}
+
+/**
+ * Check SimpleAds node status
+ */
+function _simpleads_get_node_status($nid) {
+  $node_status = db_select('node', 'n')
+    ->fields('n', array('status'))
+    ->condition('n.nid', $nid)
+    ->execute()
+    ->fetchField();
+  return (int)$node_status;
 }

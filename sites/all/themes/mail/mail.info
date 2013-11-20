@@ -1,0 +1,13 @@
+
+;----------// Theme Information
+
+  name        = mail theme
+  description = mail theme for My Spilt Milk
+  core        = 7.x
+  engine      = phptemplate
+  screenshot  = screenshot.png
+
+
+;----------// Stylesheets
+
+stylesheets[all][] = mail.css

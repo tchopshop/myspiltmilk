@@ -145,7 +145,8 @@ function template_preprocess_views_simpleads(&$vars) {
   $view = $vars['view'];
   $rows = $vars['rows'];
   $options = $vars['options'];
-  $limit = check_plain($view->query->limit);
+  $default_limit = variable_get('simpleads_default_ads_limit', 10);
+  $limit = property_exists($view->query, 'limit') ? check_plain($view->query->limit) : $default_limit;
 
   if (count($rows) > 0) {
     foreach ($rows as $i => $data) {

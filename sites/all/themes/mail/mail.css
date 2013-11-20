@@ -1,0 +1,18 @@
+/*HTML mail styles*/
+td {
+font-family: Georgia, Times New Roman, Times, serif; 
+}
+
+.field-name-field-main-image img {
+float: right;
+padding: 20px 0 20px 20px;
+}
+
+.field-name-field-subtitle {
+font-size: 18px;
+line-height: 24px;
+font-family: Georgia,Palatino,Palatino Linotype,Book Antiqua,Times New Roman,Times,serif!important;
+font-style: italic;
+margin-bottom: 15px;
+clear: left;
+}

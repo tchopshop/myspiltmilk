@@ -12,20 +12,9 @@ include_once("simpleads.updates.inc");
  */
 function simpleads_install() {
 
+  node_types_rebuild();
+
   $t = get_t();
-
-  $type = array(
-    'type' => 'simpleads',
-    'name' => $t('Simple Ad'),
-    'base' => 'node_content',
-    'description' => $t('Advertisement'),
-    'custom' => 1,
-    'modified' => 1,
-    'locked' => 0,
-  );
-
-  $type = node_type_set_defaults($type);
-  node_type_save($type);
 
   $vocabulary = (object) array(
     'name' => $t('Ad Groups'),
@@ -107,7 +96,7 @@ function simpleads_install() {
     ),
     array(
       'field_name' => 'field_ad_text',
-      'type' => 'text',
+      'type' => 'text_long',
       'cardinality' => 1,
       'translatable' => TRUE,
       'locked' => FALSE,
@@ -543,10 +532,14 @@ function simpleads_install() {
 
   user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('count ad impressions', 'count ad clicks'));
 
+  variable_set('simpleads_last_aggregation_time', 0);
+
   // Reset menu, comments and other default options.
   variable_set('menu_options_simpleads', array());
   variable_set('node_options_simpleads', array());
   variable_set('comment_simpleads', 1);
+
+  node_types_rebuild();
 }
 
 /**
@@ -562,7 +555,7 @@ function simpleads_uninstall() {
   field_delete_field('field_ad_start_date');
   field_delete_field('field_ad_end_date');
   field_delete_field('field_ad_url_taget');
-  node_type_delete('simpleads');
+  field_delete_field('field_ad_status');
 
   $vid = db_select('taxonomy_vocabulary', 'tv')
   ->fields('tv', array('vid'))
@@ -570,10 +563,13 @@ function simpleads_uninstall() {
   ->execute()
   ->fetchField();
   taxonomy_vocabulary_delete($vid);
+  variable_del('simpleads_last_aggregation_time');
   variable_del('simpleads_filters');
   variable_del('menu_options_simpleads');
   variable_del('node_options_simpleads');
   variable_del('comment_simpleads');
+
+  node_types_rebuild();
 }
 
 /**
@@ -648,6 +644,45 @@ function simpleads_schema() {
       'nid' => array('nid'),
       'aid' => array('aid'),
     ),
+  );
+
+  $schema['simpleads_stats'] = array(
+    'description' => 'Advertisement aggregated stats',
+    'fields' => array(
+      'nid'  => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Advertisement node ID',
+      ),
+      'date' => array(
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Stats day',
+      ),
+      'clicks' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Clicks counter',
+      ),
+      'clicks_unique' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Clicks counter',
+      ),
+      'impressions' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Impressions counter',
+      ),
+      'impressions_unique' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Impressions counter',
+      ),
+    ),
+    'primary key' => array('nid', 'date'),
   );
 
   $schema['simpleads_blocks'] = array(

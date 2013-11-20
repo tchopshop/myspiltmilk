@@ -67,10 +67,8 @@ function ctools_fields_fake_field_instance($field_name, $view_mode = 'ctools', $
  *   The full form_state from the function that's calling this function.
  * @param $view_mode
  *   We're passing a view mode from this function to the fake instance we're creating.  Defaults to ctools, but we expect developers to actually name this something meaningful.
- * @param $form_key
- *   Sets the formatter settings to a certain key in the $form array.
  */
-function ctools_fields_get_field_formatter_settings_form($field, $formatter_type, &$form, $form_state, $view_mode = 'ctools', $form_key = '') {
+function ctools_fields_get_field_formatter_settings_form($field, $formatter_type, &$form, $form_state, $view_mode = 'ctools') {
   $conf = $form_state['conf'];
   $formatter = field_info_formatter_types($formatter_type);
   if (isset($formatter['settings'])) {
@@ -82,12 +80,7 @@ function ctools_fields_get_field_formatter_settings_form($field, $formatter_type
     $settings_form = $function($field, $instance, $view_mode, $form, $form_state);
     if ($settings_form) {
       $form['ctools_field_list']['#value'][] = $field;
-      if (!empty($form_key)) {
-        $form[$form_key] += $settings_form;
-      }
-      else {
-        $form += $settings_form;
-      }
+      $form += $settings_form;
     }
   }
 
@@ -177,6 +170,8 @@ function ctools_field_label($field_name) {
  *
  * @param $field_name
  *   Either a field instance object or the name of the field.
+ *   If the 'field' key is populated it will be used as the field
+ *   settings.
  * @param $op
  *   Possible operations include:
  *   - form
@@ -229,6 +224,7 @@ function ctools_field_label($field_name) {
 function ctools_field_invoke_field($field_name, $op, $entity_type, $entity, &$a = NULL, &$b = NULL, $options = array()) {
   if (is_array($field_name)) {
     $instance = $field_name;
+    $field = empty($field_name['field']) ? field_info_field($instance['field_name']) : $field_name['field'];
     $field_name = $instance['field_name'];
   }
   else {
@@ -252,7 +248,6 @@ function ctools_field_invoke_field($field_name, $op, $entity_type, $entity, &$a 
 
   // Everything from here is unmodified code from _field_invoke() formerly
   // inside a foreach loop over the instances.
-  $field = field_info_field($field_name);
   $function = $options['default'] ? 'field_default_' . $op : $field['module'] . '_field_' . $op;
   if (function_exists($function)) {
     // Determine the list of languages to iterate on.

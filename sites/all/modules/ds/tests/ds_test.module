@@ -127,11 +127,6 @@ function ds_test_ds_fields_info($entity_type) {
       'field_type' => DS_FIELD_TYPE_FUNCTION,
       'function' => 'dstest_render_nothing',
     );
-    $fields['node']['ds_test_field_empty_array'] = array(
-      'title' => t('Test code field that returns an empty array'),
-      'field_type' => DS_FIELD_TYPE_FUNCTION,
-      'function' => 'dstest_render_empty_array',
-    );
     $fields['node']['ds_test_field_zero_int'] = array(
       'title' => t('Test code field that returns zero as an integer'),
       'field_type' => DS_FIELD_TYPE_FUNCTION,
@@ -202,13 +197,6 @@ function dstest_render_nothing() {
 }
 
 /**
- * Test code field that returns an empty array.
- */
-function dstest_render_empty_array() {
-  return array();
-}
-
-/**
  * Test code field that returns zero as an integer.
  */
 function dstest_render_zero_int() {
@@ -263,57 +251,6 @@ function ds_test_ds_layout_info() {
   );
 
   return $layouts;
-}
-
-/**
- * Implements hook_ctools_plugin_api().
- */
-function ds_test_ctools_plugin_api($module, $api) {
-  if ($module == 'rel' && $api == 'rel') {
-    return array('version' => 1);
-  }
-}
-
-/**
- * Implements hook_rel_build_info().
- */
-function ds_test_rel_build_info() {
-  $builds = array();
-  $build_id = 'ds_edit_view_mode_form';
-  $rel_build = new stdClass;
-  $rel_build->build_id = $build_id;
-  $rel_build->api_version = 1;
-  $rel_build->label = 'View mode';
-  $rel_build->entity_type = 'rel_build';
-  $rel_build->bundle = $build_id;
-  $rel_build->view_mode = 'form';
-  $rel_build->context = 'form';
-  $rel_build->path = 'admin/structure/rel/manage/' . $build_id;
-  $rel_build->elements = array(
-    'name' => array(
-      'owner' => 'rel',
-      'label' => t('Label'),
-      'weight' => 1,
-    ),
-    'view_mode' => array(
-      'owner' => 'rel',
-      'label' => t('Machine name'),
-      'weight' => 2,
-    ),
-    'entities' => array(
-      'owner' => 'rel',
-      'label' => t('Entities'),
-      'weight' => 3,
-    ),
-    'submit' => array(
-      'owner' => 'rel',
-      'label' => t('Submit'),
-      'weight' => 4,
-    ),
-  );
-  $rel_build->duplicate = array();
-  $builds[$build_id] = $rel_build;
-  return $builds;
 }
 
 /**

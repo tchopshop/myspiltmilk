@@ -31,13 +31,12 @@ function ds_extras_settings($form) {
   );
 
   $theme_functions = module_invoke_all('ds_field_theme_functions_info');
-  unset($theme_functions['theme_ds_field_expert']);
   $form['additional_settings']['fs1']['ft-default'] = array(
     '#type' => 'select',
     '#title' => t('Default Field Template'),
     '#options' => $theme_functions,
     '#default_value' => variable_get('ft-default', 'theme_field'),
-    '#description' => t('Default will output the field as defined in Drupal Core.<br />Reset will strip all HTML.<br />Minimal adds a simple wrapper around the field.<br/>There is also an Expert Field Template that gives full control over the HTML, but can only be set per field.<br /><br />You can override this setting per field on the "Manage display" screens or when creating fields on the instance level.<br /><br /><strong>Template suggestions</strong><br />You can create .tpl files as well for these field theme functions, e.g. field--reset.tpl.php, field--minimal.tpl.php<br /><br /><label>CSS classes</label>You can add custom CSS classes on the <a href="!url">classes form</a>. These classes can be added to fields using the Default Field Template.<br /><br /><label>Advanced</label>You can create your own custom field templates which need to be defined with hook_ds_field_theme_functions_info(). See ds.api.php for an example.', array('!url' => url('admin/structure/ds/classes'))),
+    '#description' => t('Default will output the field as defined in Drupal Core.<br />Reset will strip all HTML.<br />Minimal adds a simple wrapper around the field.<br/>There is also an Expert Field Template that gives full control over the HTML, but can only be set per field.<br /><br />You can override this setting per field on the "Manage display" screens or when creating fields on the instance level.<br /><br /><strong>Template suggestions</strong><br />You can create .tpl files as well for these field theme functions, e.g. field--reset.tpl.php, field--minimal.tpl.php<br /><br /><label>CSS classes</label>You can add custom CSS classes on the <a href="!url">classes form</a>. Display Suite UI needs to be enabled for this. These classes can be added to fields using the Default Field Template.<br /><br /><label>Advanced</label>You can create your own custom field templates which need to be defined with hook_ds_field_theme_functions_info(). See ds.api.php for an example.', array('!url' => url('admin/structure/ds/classes'))),
     '#states' => array(
       'visible' => array(
         'input[name="additional_settings[fs1][ds_extras_field_template]"]' => array('checked' => TRUE),
@@ -182,7 +181,7 @@ function ds_extras_settings_validate($form, &$form_state) {
  * Submit callback: Extras settings screen.
  */
 function ds_extras_settings_submit($form, &$form_state) {
-  cache_clear_all('ds_fields', 'cache');
+  cache_clear_all('ds_fields:', 'cache', TRUE);
   cache_clear_all('entity_info:', 'cache', TRUE);
   cache_clear_all('theme_registry:', 'cache', TRUE);
   cache_clear_all('module_implements', 'cache_bootstrap');
@@ -205,7 +204,7 @@ function ds_extras_field_ui_alter(&$form, &$form_state) {
   }
 
   // Page title functionality, currently only works on nodes, users and taxonomy terms.
-  if (variable_get('ds_extras_hide_page_title', FALSE) && isset($form['#ds_layout']) && (in_array($form['#entity_type'], array('node', 'user', 'taxonomy_term')) && ($form['#view_mode'] == 'full' || $form['#view_mode'] == 'revision' || (variable_get('ds_extras_switch_view_mode', FALSE) && $form['#entity_type'] == 'node')) || $form['#entity_type'] == 'ds_views')) {
+  if (variable_get('ds_extras_hide_page_title', FALSE) && isset($form['#ds_layout']) && (in_array($form['#entity_type'], array('node', 'user', 'taxonomy_term', 'profile2')) && ($form['#view_mode'] == 'full' || $form['#view_mode'] == 'revision' ||  (variable_get('ds_extras_switch_view_mode', FALSE) && $form['#entity_type'] == 'node')) || $form['#entity_type'] == 'ds_views' || $form['#entity_type'] == 'profile2')) {
     $form['additional_settings']['ds_page_title'] = array(
       '#type' => 'fieldset',
       '#title' => t('Custom page title'),

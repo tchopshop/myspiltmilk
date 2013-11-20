@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Declares Views API version. And adds CSS.
+ * Some basic function for Free pager. Mostly implementations of Views hooks.
  */
 
 /**
@@ -14,6 +14,32 @@ function freepager_views_api() {
   );
 }
 
+/**
+ * Implements hook_libraries_info().
+ */
+function freepager_libraries_info() {
+  $libraries['jquery-mobile'] = array(
+    'name' => 'jQuery mobile',
+    'vendor url' => 'http://jquerymobile.com/',
+    'download url' => 'http://jquerymobile.com/download/',
+    'files' => array(
+      'js' => array('jquery.mobile.js' => array()),
+    ),
+    'version arguments' => array(
+      'file' => 'jquery.mobile.js',
+      // Best practice: Document the actual version strings for later reference.
+      // 1.x: Version 1.0
+      'pattern' => '/jQuery Mobile (\d+)/',
+      'lines' => 2,
+    ),
+  );
+  return $libraries;
+}
+
+/**
+ * Helper function to keep track of settings used by Free pager in Views.
+ * @return type
+ */
 function freepager_settings() {
   return array(
     'path' => array(
@@ -32,6 +58,10 @@ function freepager_settings() {
       'label' => t("Field for 'next'"),
       'description' => t('Select the field containing data used for linking to next item.'),
     ),
+    'loop' => array(
+      'label' => t("Loop the pager"),
+      'description' => t('Check this box to have the last item followed by the first one, and vice versa.'),
+    ),
   );
 }
 
@@ -41,62 +71,82 @@ function freepager_settings() {
 function freepager_preprocess_views_freepager(&$vars) {
   // Let's get some of the data we will need.
   $view = &$vars['view'];
-  $fields = array_keys(freepager_settings());
-  foreach($fields as $field) {
-    $field_names[$field] = $vars['view']->display_handler->options[$field];
+
+  if(count($view->result) <= 1) {
+    $view->result = array();
+    return;
   }
 
+  $rendered_result = $view->style_plugin->render_fields($view->result);
+  $fields = array_keys(freepager_settings());
+  foreach($fields as $field) {
+    $field_names[$field] = $view->display_handler->options[$field];
+  }
   $current_path = implode('/', arg());
 
   // Let's go see if we're looking at a page matching the provided paths.
-  foreach (array_keys($view->result) as $row_number) {
-
-    // Check if the path in the view is the same as we're viewing.
-    $rendered_path = $view->render_field($field_names['path'], $row_number);
-    if ($rendered_path == $current_path) {
-
-      if ($field_names['previous']) {
-      	_freepager_render_req_fields($view, $row_number - 1);
-        $vars['previous'] = $view->render_field($field_names['previous'], $row_number - 1);
-        $vars['previous_linked'] = l($vars['previous'], $view->render_field($field_names['path'], $row_number - 1), array('html' => TRUE));
-      }
-      if ($field_names['current']) {
-      	_freepager_render_req_fields($view, $row_number);
-        $vars['current'] = $view->render_field($field_names['current'], $row_number);
-        $vars['current_linked'] = l($vars['current'], $view->render_field($field_names['path'], $row_number), array('html' => TRUE));
-      }
-      if ($field_names['next']) {
-      	_freepager_render_req_fields($view, $row_number + 1);
-        $vars['next'] = $view->render_field($field_names['next'], $row_number + 1);
-        $vars['next_linked'] = l($vars['next'], $view->render_field($field_names['path'], $row_number + 1), array('html' => TRUE));
-      }
-      $vars['row_number'] = $row_number;
-      $vars['total_rows'] = count($view->result);
-      
-      // If we found a path match, there is no need to look for another one.
-      // Let's break to save a few clock cycles.
-      return;
+  $row_number = -1;
+  foreach ($rendered_result as $row => $result) {
+    if ($result[$field_names['path']] == $current_path) {
+      $row_number = $row;
+      continue;
     }
   }
 
-  // If we got this far, no match against current path was found. Let's indicate
-  // this for use later on.
-  $vars['view']->display_handler->no_path_match = TRUE;
-}
+  // If no hit is found, set a flag and quit.
+  if ($row_number == -1) {
+    $view->display_handler->no_path_match = TRUE;
+    return;
+  }
 
-/**
- * Internal function
- * 
- * Prepare *all* the fields in this row – there may be token replacement 
- * patterns required by the fields we use. And also prepare the fields
- * in the previous and next rows.
- */
-function _freepager_render_req_fields($view, $row_to_render){
-	
-	foreach(array_keys($view->display_handler->get_field_labels()) as $field_name) {
-		$view->render_field($field_name, $row_to_render);
-	}
-	
+  $count = count($view->result);
+
+  // Build the 'previous' item.
+  if ($field_names['previous']) {
+    $previous_row_number = ($row_number - 1);
+    // Loop the 'previous' index, if the pager is set to loop.
+    if ($previous_row_number < 0 && $view->display_handler->get_option('loop')) {
+      $previous_row_number += $count;
+    }
+
+    if ($previous_row_number >= 0) {
+      $vars['previous'] = $rendered_result[$previous_row_number][$field_names['previous']];
+      $vars['previous_linked'] = l($vars['previous'], $rendered_result[$previous_row_number][$field_names['path']], array('html' => TRUE, 'attributes' => array('rel' => 'prev')));
+    }
+  }
+
+  // Build the 'current' item.
+  if ($field_names['current']) {
+    $vars['current'] = $rendered_result[$row_number][$field_names['current']];
+    $vars['current_linked'] = l($vars['current'], $rendered_result[$row_number][$field_names['path']], array('html' => TRUE));
+  }
+
+  // Build the 'next' item.
+  if ($field_names['next']) {
+    $next_row_number = $row_number + 1;
+    // Loop the 'next' index, if the pager is set to loop.
+    if ($next_row_number >= $count && $view->display_handler->get_option('loop')) {
+      $next_row_number -= $count;
+    }
+
+    if ($next_row_number < $count) {
+      $vars['next'] = $rendered_result[$next_row_number][$field_names['next']];
+      $vars['next_linked'] = l($vars['next'], $rendered_result[$next_row_number][$field_names['path']], array('html' => TRUE, 'attributes' => array('rel' => 'next')));
+    }
+  }
+
+  // Set two other items that might be used by the theme template.
+  $vars['row_number'] = $row_number;
+  $vars['total_rows'] = $count;
+
+// This is commented out, while waiting for a better solution (and jQuery
+// implementation that follows coding standards. See
+// http://drupal.org/node/1966002#comment-7398708 .
+//
+//  // If the jQuery mobile library is present, load it and run some helping JS.
+//  if (($library = libraries_load('jquery-mobile')) && !empty($library['loaded'])) {
+//    drupal_add_js(drupal_get_path('module', 'freepager') . '/freepager.js');
+//  }
 }
 
 /**

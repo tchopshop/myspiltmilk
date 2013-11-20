@@ -20,7 +20,8 @@ abstract class MediaBrowserPlugin implements MediaBrowserPluginInterface {
   protected $info;
 
   /**
-   * The parameters for the current media browser from media_get_browser_params().
+   * The parameters for the current media browser from
+   * media_get_browser_params().
    *
    * @var array
    */
@@ -54,7 +55,8 @@ abstract class MediaBrowserPlugin implements MediaBrowserPluginInterface {
    * This render array will be a jQuery tab in the media browser.
    *
    * Some elements are special:
-   *  - #settings: Drupal.settings.media.browser.$key (where key is the array key).
+   *  - #settings: Drupal.settings.media.browser.$key (where key is the array
+   *    key).
    *  - #callback: If provided, will make the tab an "ajax" tab.
    *  - #title: If provided, will be used as the tab's title. Otherwise the
    *    'title' value from the plugin's hook_media_browser_plugin_info() will
@@ -65,25 +67,19 @@ abstract class MediaBrowserPlugin implements MediaBrowserPluginInterface {
    *    plugin's hook_media_browser_plugin_info() then it will be used,
    *    otherwise a default of 0 will be used.
    *  - form: If the plugin is to display a native Drupal form, then the output
-   *    of drupal_get_form should be returned into the 'form' render key.
+   *    of drupal_get_form should be returned into the 'form' render key. If a
+   *    form's callback isn't normally loaded, module_load_include() should be
+   *    used to ensure that the form can be displayed.
    *
-   * Example:
+   * Example usage:
    * @code
-   *  return array(
-   *    '#attached' => array(
-   *      'js' => array(
-   *         drupal_get_path('module', 'media') . '/js/plugins/media.library.js',
-   *       ),
-   *     ),
-   *     '#settings' => array(
-   *       'viewMode' => 'thumbnails',
-   *       'getMediaUrl' => url('media/browser/list'),
-   *     ),
-   *     '#markup' => '<div>Library goes here</div>',
-   * );
+   *   module_load_include('inc', 'mymodule', 'mymodule.pages');
+   *   $build['#attached']['js'][] = drupal_get_path('module', 'mymodule') . '/js/mymodule.media.browser.js';
+   *   $build['form'] = drupal_get_form('mymodule_media_form');
+   *   return $build;
    * @endcode
    *
-   * @return
+   * @return array
    *   Renderable array.
    */
   abstract public function view();

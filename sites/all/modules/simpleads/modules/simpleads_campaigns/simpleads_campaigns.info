@@ -6,9 +6,9 @@ core = "7.x"
 scripts[] = simpleads_campaigns.js
 
 dependencies[] = simpleads
-; Information added by drupal.org packaging script on 2012-05-03
-version = "7.x-1.8"
+; Information added by drupal.org packaging script on 2013-10-01
+version = "7.x-1.8+30-dev"
 core = "7.x"
 project = "simpleads"
-datestamp = "1336020091"
+datestamp = "1380627961"
 

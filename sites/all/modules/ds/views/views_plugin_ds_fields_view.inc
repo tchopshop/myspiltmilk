@@ -23,6 +23,12 @@ class views_plugin_ds_fields_view extends views_plugin_row {
   // Return base_field based on base_table. It might not be
   // the cleanest solution, it's the fastest though.
   function ds_views_3_support() {
+    if (strpos($this->base_table, 'eck_') === 0) {
+      // Base tables of entities created by entity construction kit (eck)
+      // are prefixed with 'eck_' and the base field is always 'id'.
+      return 'id';
+    }
+
     $base_table_fields = array(
       'node' => 'nid',
       'comment' => 'cid',
@@ -32,6 +38,9 @@ class views_plugin_ds_fields_view extends views_plugin_row {
       'file_managed' => 'fid',
       'micro' => 'mid',
       'drealty_listing' => 'id',
+      'commerce_product' => 'product_id',
+      'commerce_line_item' => 'line_item_id',
+      'civicrm_event' => 'id',
     );
     return isset($base_table_fields[$this->base_table]) ? $base_table_fields[$this->base_table] : 'nid';
   }
@@ -115,7 +124,7 @@ function template_preprocess_ds_row_fields(&$vars) {
             continue;
           }
           $region_content .= '<div class="views-field-' . $field . '">';
-          if (isset($view->field[$field]->options['label'])) {
+          if (!empty($view->field[$field]->options['label'])) {
             $region_content .= '<div class="field-label">';
             $region_content .= check_plain($view->field[$field]->options['label']);
             if ($view->field[$field]->options['element_label_colon']) {
@@ -126,10 +135,11 @@ function template_preprocess_ds_row_fields(&$vars) {
           $region_content .= $view->style_plugin->rendered_fields[$row_index][$field];
           $region_content .= '</div>';
         }
-        // Region wrapper.
-        $vars[$region_name . '_wrapper'] = isset($layout['settings']['wrappers'][$region_name]) ? $layout['settings']['wrappers'][$region_name] : 'div';
       }
       $vars[$region_name] = $region_content;
+
+      // Region wrapper.
+      $vars[$region_name . '_wrapper'] = isset($layout['settings']['wrappers'][$region_name]) ? $layout['settings']['wrappers'][$region_name] : 'div';
 
       // Add extras classes to the region.
       $vars[$region_name . '_classes'] = !empty($layout['settings']['classes'][$region_name]) ? ' ' . implode(' ', $layout['settings']['classes'][$region_name]) : '';

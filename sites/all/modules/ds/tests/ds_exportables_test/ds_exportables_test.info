@@ -4,9 +4,9 @@ package = "Display Suite"
 core = 7.x
 hidden = TRUE
 
-; Information added by drupal.org packaging script on 2012-06-01
-version = "7.x-2.x-dev"
+; Information added by drupal.org packaging script on 2013-09-04
+version = "7.x-2.6"
 core = "7.x"
 project = "ds"
-datestamp = "1338509417"
+datestamp = "1378305390"
 

@@ -19,7 +19,7 @@
       });
 
       // Catch the click on a media item
-      $('.media-item').bind('click', function () {
+      $('#media-youtube-add .media-item').bind('click', function () {
         // Remove all currently selected files
         $('.media-item').removeClass('selected');
         // Set the current item to active
@@ -32,7 +32,7 @@
         var files = new Array();
         files.push(file);
         Drupal.media.browser.selectMedia(files);
-        $("input[name='sumitted-video']").val(uri);
+        $("input[name='submitted-video']").val(uri);
       });
 
 //      $('.')

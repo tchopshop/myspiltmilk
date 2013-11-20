@@ -61,6 +61,8 @@ function simpleads_wysiwyg_plugin($editor, $version) {
 
   _simpleads_filter_add_settings('wysiwyg_' . $editor);
 
+  $plugins = array();
+
   switch ($editor) {
     case 'tinymce':
       $plugins['simpleads'] = array(

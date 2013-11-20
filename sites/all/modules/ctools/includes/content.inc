@@ -458,9 +458,12 @@ function ctools_content_admin_info($type, $subtype, $conf, $context = NULL) {
   if ($function = ctools_plugin_get_function($plugin, 'admin info')) {
     $output = $function($subtype, $conf, $context);
   }
+
   if (empty($output) || !is_object($output)) {
     $output = new stdClass();
-    $output->title = t('No info');
+    // replace the _ with " " for a better output
+    $subtype = check_plain(str_replace("_", " ", $subtype));
+    $output->title = $subtype;
     $output->content = t('No info available.');
   }
   return $output;
@@ -542,25 +545,6 @@ function ctools_content_configure_form_defaults_submit(&$form, &$form_state) {
  * The $form_info and $form_state need to be preconfigured with data you'll need
  * such as whether or not you're using ajax, or the modal. $form_info will need
  * your next/submit callbacks so that you can cache your data appropriately.
- *
- * @param $op
- *   In which step of the content form are we. Possible values:
- *    - 'add'
- *    - others
- * @param $form_info
- *   The multistep form info of the ctools content form.
- * @param $form_state
- *   The current form_state on the form we are configuring at the moment.
- * @param $plugin
- *   The content type plugin info of the current content type.
- * @param $subtype_name
- *   The machine readable name of the current subtype of $plugin.
- * @param $subtype
- *   The subtype information of the current subtype of $plugin.
- * @param $conf
- *   The configuration options of the content type.
- * @param $step
- *   On which step of the multistep function are we.
  *
  * @return
  *   If this function returns false, no form exists.

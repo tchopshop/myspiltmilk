@@ -1,7 +1,7 @@
 <?php
 /**
  * @file freepager.tpl.php
- * Default view template to display Free Pager.
+ * Default view template to display Free pager blocks.
  *
  * Available variables:
  *

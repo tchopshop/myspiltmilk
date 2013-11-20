@@ -543,6 +543,7 @@ function ds_extras_preprocess_view_layout(&$variables) {
     $variables['elements']['#view_mode'] = 'default';
 
     $variables['ds_views'] = $variables['view'];
+    $variables['render_code_fields'] = TRUE;
     ds_field_attach_view_alter($variables, array('view_mode' => 'default', 'entity' => $variables['view']));
 
     // Special case for views function fields.
@@ -647,6 +648,9 @@ function ds_extras_is_entity_page_view($build, $entity_type) {
     case 'taxonomy_term':
       $page_term = menu_get_object('taxonomy_term', 2);
       return (!empty($page_term) ? $page_term->tid == $build['#term']->tid : FALSE);
+      break;
+    case 'profile2':
+      return $build['#view_mode'] == 'page';
       break;
   }
 
@@ -829,40 +833,41 @@ function ds_extras_ds_field_settings_alter(&$field_settings, $form, &$form_state
     if (empty($values)) {
       continue;
     }
+    $field_settings[$key]['formatter_settings']['ft'] = array();
 
     // Theme output function.
-    $function = $values['func'];
+    $function = isset($values['func']) ? $values['func'] : $default_field_function;
     if ($function != $default_field_function) {
-      $field_settings[$key]['ft']['func'] = $function;
+      $field_settings[$key]['formatter_settings']['ft']['func'] = $function;
     }
 
     // Field classes.
     if ($function != 'theme_ds_field_expert' && $function != 'theme_ds_field_reset' && isset($values['classes'])) {
-      $classes = implode(' ', $values['classes']);
+      $classes = is_array($values['classes']) ? implode(' ', $values['classes']) : $values['classes'];
       if (!empty($classes)) {
-        $field_settings[$key]['ft']['classes'] = $classes;
+        $field_settings[$key]['formatter_settings']['ft']['classes'] = $classes;
       }
     }
 
     // Label.
     if (isset($form_state['values']['fields'][$key]['label']) && $form_state['values']['fields'][$key]['label'] != 'hidden') {
       if (!empty($values['lb'])) {
-        $field_settings[$key]['ft']['lb'] = $values['lb'];
+        $field_settings[$key]['formatter_settings']['ft']['lb'] = $values['lb'];
       }
       if (!(empty($values['lb-el'])) && $function == 'theme_ds_field_expert') {
-        $field_settings[$key]['ft']['lb-el'] = check_plain($values['lb-el']);
+        $field_settings[$key]['formatter_settings']['ft']['lb-el'] = check_plain($values['lb-el']);
       }
       if (!(empty($values['lb-cl'])) && $function == 'theme_ds_field_expert') {
-        $field_settings[$key]['ft']['lb-cl'] = check_plain($values['lb-cl']);
+        $field_settings[$key]['formatter_settings']['ft']['lb-cl'] = check_plain($values['lb-cl']);
       }
       if (!(empty($values['lb-at'])) && $function == 'theme_ds_field_expert') {
-       $field_settings[$key]['ft']['lb-at'] = filter_xss($values['lb-at']);
+       $field_settings[$key]['formatter_settings']['ft']['lb-at'] = filter_xss($values['lb-at']);
       }
       if (!(empty($values['lb-def-at'])) && $function == 'theme_ds_field_expert') {
-       $field_settings[$key]['ft']['lb-def-at'] = TRUE;
+       $field_settings[$key]['formatter_settings']['ft']['lb-def-at'] = TRUE;
       }
       if (!(empty($values['lb-col']))) {
-        $field_settings[$key]['ft']['lb-col'] = TRUE;
+        $field_settings[$key]['formatter_settings']['ft']['lb-col'] = TRUE;
       }
     }
 
@@ -871,22 +876,22 @@ function ds_extras_ds_field_settings_alter(&$field_settings, $form, &$form_state
       foreach ($wrappers as $wrapper_key => $title) {
         if (!empty($values[$wrapper_key])) {
           // Enable.
-          $field_settings[$key]['ft'][$wrapper_key] = TRUE;
+          $field_settings[$key]['formatter_settings']['ft'][$wrapper_key] = TRUE;
           // Element.
-          $field_settings[$key]['ft'][$wrapper_key . '-el'] = !(empty($values[$wrapper_key . '-el'])) ? check_plain($values[$wrapper_key . '-el']) : 'div';
+          $field_settings[$key]['formatter_settings']['ft'][$wrapper_key . '-el'] = !(empty($values[$wrapper_key . '-el'])) ? check_plain($values[$wrapper_key . '-el']) : 'div';
           // Classes.
-          $field_settings[$key]['ft'][$wrapper_key . '-cl'] = !(empty($values[$wrapper_key . '-cl'])) ? check_plain($values[$wrapper_key . '-cl']) : '';
+          $field_settings[$key]['formatter_settings']['ft'][$wrapper_key . '-cl'] = !(empty($values[$wrapper_key . '-cl'])) ? check_plain($values[$wrapper_key . '-cl']) : '';
           // Default Classes.
           if (in_array($wrapper_key, array('ow', 'lb'))) {
-            $field_settings[$key]['ft'][$wrapper_key . '-def-cl'] = !(empty($values[$wrapper_key . '-def-cl'])) ? TRUE : FALSE;
+            $field_settings[$key]['formatter_settings']['ft'][$wrapper_key . '-def-cl'] = !(empty($values[$wrapper_key . '-def-cl'])) ? TRUE : FALSE;
           }
           // Attributes.
-          $field_settings[$key]['ft'][$wrapper_key . '-at'] = !(empty($values[$wrapper_key . '-at'])) ? filter_xss($values[$wrapper_key . '-at']) : '';
+          $field_settings[$key]['formatter_settings']['ft'][$wrapper_key . '-at'] = !(empty($values[$wrapper_key . '-at'])) ? filter_xss($values[$wrapper_key . '-at']) : '';
           // Default attributes.
-          $field_settings[$key]['ft'][$wrapper_key . '-def-at'] = !(empty($values[$wrapper_key . '-def-at'])) ? TRUE : FALSE;
+          $field_settings[$key]['formatter_settings']['ft'][$wrapper_key . '-def-at'] = !(empty($values[$wrapper_key . '-def-at'])) ? TRUE : FALSE;
           // Odd even class.
           if ($wrapper_key == 'fi') {
-            $field_settings[$key]['ft'][$wrapper_key . '-odd-even'] = !(empty($values[$wrapper_key . '-odd-even'])) ? TRUE : FALSE;
+            $field_settings[$key]['formatter_settings']['ft'][$wrapper_key . '-odd-even'] = !(empty($values[$wrapper_key . '-odd-even'])) ? TRUE : FALSE;
           }
         }
       }
@@ -921,8 +926,8 @@ function ds_extras_preprocess_field(&$variables) {
 
   // Check if this field has custom output settings.
   $variables['ds-config'] = array();
-  if (isset($field_settings[$entity_type][$bundle][$view_mode][$field_name]['ft'])) {
-    $config = $field_settings[$entity_type][$bundle][$view_mode][$field_name]['ft'];
+  if (isset($field_settings[$entity_type][$bundle][$view_mode][$field_name]['formatter_settings']['ft'])) {
+    $config = $field_settings[$entity_type][$bundle][$view_mode][$field_name]['formatter_settings']['ft'];
     $variables['ds-config'] = $config;
   }
 
@@ -964,8 +969,8 @@ function ds_extras_preprocess_field(&$variables) {
     $variables['theme_hook_suggestions'][] = $suggestion . '__' . $variables['element']['#bundle'];
     $variables['theme_hook_suggestions'][] = $suggestion . '__' . $field_name . '__' . $variables['element']['#bundle'];
   }
-  // Default theming function.
-  else {
+  // Use Display Suite Extras Default theming function.
+  elseif (!isset($config['func']) || empty($config['func'])) {
     $field_theme_function = variable_get('ft-default', 'theme_field');
     if ($field_theme_function != 'theme_field') {
       $variables['theme_hook_suggestions'] = array();

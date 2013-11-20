@@ -111,7 +111,7 @@ function video_embed_field_overlay_field_formatter_settings_summary($field, $ins
     $image_styles = image_style_options(FALSE);
     if (isset($image_styles[$settings['image_style']])) {
       $summary[] = t('Image style: @style', array('@style' => $image_styles[$settings['image_style']]));
-    } //No Image style (original image)  
+    } //No Image style (original image)
     else {
       $summary[] = t('Original Image.');
     }
@@ -120,21 +120,21 @@ function video_embed_field_overlay_field_formatter_settings_summary($field, $ins
     // @TODO: extend this to use a list of available overlay libraries.
     if (isset($settings['overlay'])) {
       $summary[] = t('Overlay Library: @overlay.', array('@overlay' => 'DOM Window'));
-    }  
+    }
     else {
       $summary[] = t('Overlay Library: @overlay.', array('@overlay' => 'DOM Window'));
     }
   }
-  
+
   return implode('<br />', $summary);
 }
 
 /**
  * Implements hook_field_formatter_view().
  */
-function video_embed_field_overlay_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display){
+function video_embed_field_overlay_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
-  
+
   foreach ($items as $delta => $item) {
     if ($display['type'] == 'video_embed_field_overlay') {
       if (!isset($item['description']) || empty($item['description'])) {
@@ -161,10 +161,10 @@ function video_embed_field_overlay_field_formatter_view($entity_type, $entity, $
           'video_embed_field_overlay' => array(
             'path' => drupal_get_path('module', 'video_embed_field_overlay'),
           ),
-        ), 'setting');
+          ), 'setting');
       }
       else {
-        drupal_set_message('DOM Window library was not found.', 'warning');
+        drupal_set_message(t('DOM Window library was not found.'), 'warning');
       }
     }
   }
@@ -177,7 +177,7 @@ function video_embed_field_overlay_field_formatter_view($entity_type, $entity, $
  */
 function theme_video_embed_field_overlay(&$variables) {
   $output = '';
-  
+
   if (isset($variables['show_thumbnail']) && $variables['show_thumbnail'] == TRUE) {
     if (isset($variables['image_style']) && $variables['image_style']) {
       $thumbnail = theme('image_style', array(
@@ -188,7 +188,7 @@ function theme_video_embed_field_overlay(&$variables) {
       $thumbnail = theme('image', array(
         'path' => $variables['thumbnail_path'],
         'alt' => $variables['description'],
-      ));
+        ));
     }
   }
 
@@ -199,7 +199,7 @@ function theme_video_embed_field_overlay(&$variables) {
         'title' => $variables['description'],
       ),
       'html' => TRUE,
-    ));
+      ));
   }
   else {
     $link = l($thumbnail, $variables['video_url'], array(
@@ -207,7 +207,7 @@ function theme_video_embed_field_overlay(&$variables) {
         'class' => array('overlay'),
       ),
       'html' => TRUE,
-    ));
+      ));
   }
 
   if (!isset($variables['video_style']) || empty($variables['video_style'])) {
@@ -215,10 +215,10 @@ function theme_video_embed_field_overlay(&$variables) {
   }
 
   $embed_code = theme('video_embed_field_embed_code', array(
-    'url' => $variables['video_url'], 
-    'style' => $variables['video_style'], 
-  ));
-  
+    'url' => $variables['video_url'],
+    'style' => $variables['video_style'],
+    ));
+
   $output .= '<div class="video-overlay">';
   $output .= '  <div class="video-overlay-thumbnail">';
   $output .= '    ' . $link;
@@ -259,7 +259,7 @@ function video_embed_field_overlay_image_default_styles() {
   );
 
   // If the user has enabled the imagecache_canvasactions module, use it.
-  // @see: http://drupal.org/project/imagecache_actions
+  // @see http://drupal.org/project/imagecache_actions
   if (module_exists('imagecache_canvasactions')) {
     $styles['video_thumbnail']['effects'][] = array(
       'label' => 'Overlay (watermark)',
@@ -273,7 +273,8 @@ function video_embed_field_overlay_image_default_styles() {
         'xpos' => 'center',
         'ypos' => 'center',
         'alpha' => '100',
-        'path' => drupal_get_path('module', 'video_embed_field_overlay') . '/images/video_overlay.png',
+        // 'path' => drupal_get_path('module', 'video_embed_field_overlay') . '/images/video_overlay.png',
+        'path' => 'module://video_embed_field_overlay/images/video_overlay.png',
       ),
       'weight' => '2',
     );

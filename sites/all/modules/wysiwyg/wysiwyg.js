@@ -11,7 +11,6 @@ Drupal.wysiwygInit = function() {
   if (/KDE/.test(navigator.vendor)) {
     return;
   }
-
   jQuery.each(Drupal.wysiwyg.editor.init, function(editor) {
     // Clone, so original settings are not overwritten.
     this(jQuery.extend(true, {}, Drupal.settings.wysiwyg.configs[editor]));
@@ -59,7 +58,7 @@ Drupal.behaviors.attachWysiwyg = {
       // Directly attach this editor, if the input format is enabled or there is
       // only one input format at all.
       if ($this.is(':input')) {
-        Drupal.wysiwygAttach(context, params[format], settings);
+        Drupal.wysiwygAttach(context, params[format]);
       }
       // Attach onChange handlers to input format selector elements.
       if ($this.is('select')) {
@@ -67,47 +66,35 @@ Drupal.behaviors.attachWysiwyg = {
           // If not disabled, detach the current and attach a new editor.
           Drupal.wysiwygDetach(context, params[format]);
           format = 'format' + this.value;
-          Drupal.wysiwygAttach(context, params[format], settings);
+          Drupal.wysiwygAttach(context, params[format]);
         });
       }
-
-      var form_instance = $('#' + params.field).parents('form');
-      var event_sources = [ {'instance' : form_instance, 'event' : 'submit'} ];
-
-      // CTools modal content support
-      var ctools_modal_content = $('#' + params.field).closest('div.ctools-modal-content');
-      if (ctools_modal_content.length > 0) {
-        event_sources[0].index = 0;
-        var ctools_close_instance = ctools_modal_content.find('a.close');
-        event_sources.push({'instance' : ctools_close_instance, 'event' : 'click', "index" : 0});
-      }
-
-      for (index = 0; index < event_sources.length; index++) {
-        var event_name = event_sources[index].event;
-
-        // Append handler
-        event_sources[index].instance.bind(event_name, function (event) {
-         // Do not detach if the event was cancelled.
-          if (event.isDefaultPrevented()) {
-            return;
-          }
-          Drupal.wysiwygDetach(context, params[format]);
-        });
-
-        // Insert our handler at a specific position
-        var events_data = event_sources[index].instance.data('events');
-        var event_handlers = events_data[event_name];
-        if (typeof event_sources[index].index == 'number' && event_handlers.length > 1) {
-          event_handlers.splice(event_sources[index].index, 0, event_handlers.pop());
+      // Detach any editor when the containing form is submitted.
+      $('#' + params.field).parents('form').submit(function (event) {
+        // Do not detach if the event was cancelled.
+        if (event.isDefaultPrevented()) {
+          return;
         }
-      }
+        Drupal.wysiwygDetach(context, params[format], 'serialize');
+      });
     });
   },
 
-  detach: function (context, settings) {
-    $('.wysiwyg', context).removeOnce('wysiwyg', function () {
+  detach: function (context, settings, trigger) {
+    var wysiwygs;
+    // The 'serialize' trigger indicates that we should simply update the
+    // underlying element with the new text, without destroying the editor.
+    if (trigger == 'serialize') {
+      // Removing the wysiwyg-processed class guarantees that the editor will
+      // be reattached. Only do this if we're planning to destroy the editor.
+      wysiwygs = $('.wysiwyg-processed', context);
+    }
+    else {
+      wysiwygs = $('.wysiwyg', context).removeOnce('wysiwyg');
+    }
+    wysiwygs.each(function () {
       var params = Drupal.settings.wysiwyg.triggers[this.id];
-      Drupal.wysiwygDetach(context, params);
+      Drupal.wysiwygDetach(context, params, trigger);
     });
   }
 };
@@ -125,7 +112,7 @@ Drupal.behaviors.attachWysiwyg = {
  * @param params
  *   An object containing input format parameters.
  */
-Drupal.wysiwygAttach = function(context, params, settings) {
+Drupal.wysiwygAttach = function(context, params) {
   if (typeof Drupal.wysiwyg.editor.attach[params.editor] == 'function') {
     // (Re-)initialize field instance.
     Drupal.wysiwyg.instances[params.field] = {};
@@ -166,14 +153,20 @@ Drupal.wysiwygAttach = function(context, params, settings) {
  *   A DOM element, supplied by Drupal.attachBehaviors().
  * @param params
  *   An object containing input format parameters.
+ * @param trigger
+ *   A string describing what is causing the editor to be detached.
+ *
+ * @see Drupal.detachBehaviors
  */
-Drupal.wysiwygDetach = function(context, params) {
+Drupal.wysiwygDetach = function (context, params, trigger) {
+  // Do not attempt to detach an unknown editor instance (Ajax).
   if (typeof Drupal.wysiwyg.instances[params.field] == 'undefined') {
     return;
   }
+  trigger = trigger || 'unload';
   var editor = Drupal.wysiwyg.instances[params.field].editor;
   if (jQuery.isFunction(Drupal.wysiwyg.editor.detach[editor])) {
-    Drupal.wysiwyg.editor.detach[editor](context, params);
+    Drupal.wysiwyg.editor.detach[editor](context, params, trigger);
   }
 };
 
@@ -220,6 +213,7 @@ Drupal.wysiwyg.toggleWysiwyg = function (event) {
     Drupal.wysiwyg.editor.attach.none(context, params);
     Drupal.wysiwyg.instances[params.field] = Drupal.wysiwyg.editor.instance.none;
     Drupal.wysiwyg.instances[params.field].editor = 'none';
+    Drupal.wysiwyg.instances[params.field].field = params.field;
     $(this).html(Drupal.settings.wysiwyg.enable).blur();
   }
   else {
@@ -266,5 +260,10 @@ Drupal.wysiwyg.getParams = function(element, params) {
  * Allow certain editor libraries to initialize before the DOM is loaded.
  */
 Drupal.wysiwygInit();
+
+// Respond to CTools detach behaviors event.
+$(document).bind('CToolsDetachBehaviors', function(event, context) {
+  Drupal.behaviors.attachWysiwyg.detach(context, {}, 'unload');
+});
 
 })(jQuery);

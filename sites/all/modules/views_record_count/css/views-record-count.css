@@ -1,0 +1,15 @@
+.view-footer p, .view-header p {
+  font-family: arial;
+  font-size: 12px;
+  font-style: italic;
+}
+.view-footer strong, .view-header strong {
+  font-weight: bold;
+  color: #4183c4;
+}
+.show {
+  display: block;
+}
+.hide {
+  display: none;
+}

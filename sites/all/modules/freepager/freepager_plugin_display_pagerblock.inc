@@ -47,9 +47,13 @@ class freepager_plugin_display_pagerblock extends views_plugin_display_block {
       $options[$name] = array(
         'category' => 'freepager_block',
         'title' => $setting['label'],
-        'value' => $this->get_option($name) ? $field_labels[$this->get_option($name)] : t('(none)'),
+        'value' => isset($field_labels[$this->get_option($name)]) ? $field_labels[$this->get_option($name)] : t('(none)'),
       );
     }
+
+    // The 'loop' option is treated differently. It isn't a field select list.
+    $yesno = array(0 => t('no'), 1 => t('yes'));
+    $options['loop']['value'] = $yesno[$this->get_option($name)];
   }
 
   /**
@@ -66,12 +70,22 @@ class freepager_plugin_display_pagerblock extends views_plugin_display_block {
     // If one of Free pager's settings are built, populate the form.
     if (isset($freepager_settings[$section])) {
       $form['#title'] .= $freepager_settings[$section]['label'];
-      $form[$form_state['section']] = array(
+      $form[$section] = array(
         '#type' => 'select',
         '#description' => $freepager_settings[$section]['description'],
         '#options' => array(FALSE => t('(none)')) + $this->get_field_labels(),
         '#default_value' => $this->get_option($section),
       );
+
+      // The 'loop' setting should be treated differently. It's a check box.
+      if ($section == 'loop') {
+        $form[$section] = array(
+          '#type' => 'checkbox',
+          '#title' => $freepager_settings['loop']['label'],
+          '#description' => $freepager_settings[$section]['description'],
+          '#default_value' => $this->get_option($section),
+        );
+      }
     }
   }
 
@@ -86,7 +100,7 @@ class freepager_plugin_display_pagerblock extends views_plugin_display_block {
     // Set some variables to increase code readability.
     $freepager_settings = freepager_settings();
     $section = &$form_state['section'];
-    
+
     // If one of Free pager's settings are submitted, make sure to save them.
     if (isset($freepager_settings[$section])) {
       $this->set_option($section, $form_state['values'][$section]);

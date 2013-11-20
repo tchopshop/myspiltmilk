@@ -11,7 +11,8 @@
 function _simpleads_stat_tab($nid) {
   $result = " ";
 
-  $form_after_stats = drupal_render(drupal_get_form('_simpleads_after_stats_form'));
+  $stats_form = drupal_get_form('_simpleads_after_stats_form');
+  $form_after_stats = drupal_render($stats_form);
 
   if (is_numeric($nid)) {
     $node = node_load($nid);
@@ -312,58 +313,114 @@ function _simpleads_date_diff($node) {
 function _simpleads_get_statistics($table, $nid) {
   $stats = array();
 
-  $stats['Last Hour'] = db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 HOUR)")->condition("sc.nid", $nid)
-  ->countQuery()->execute()->fetchField() . '/' . db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 HOUR)")->condition("sc.nid", $nid)->groupBy('sc.ip_address')
-  ->countQuery()->execute()->fetchField();
+  if ( $table == 'simpleads_clicks' ) {
 
-  $stats['Today'] = db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp, '%d%m%Y') = FROM_UNIXTIME(UNIX_TIMESTAMP(), '%d%m%Y')")->condition("sc.nid", $nid)
-  ->countQuery()->execute()->fetchField() . '/' . db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp, '%d%m%Y') = FROM_UNIXTIME(UNIX_TIMESTAMP(), '%d%m%Y')")->condition("sc.nid", $nid)->groupBy('sc.ip_address')
-  ->countQuery()->execute()->fetchField();
+    $stats['Yesterday'] = db_query("SELECT IFNULL(SUM(sc.clicks), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 DAY)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.clicks_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 DAY)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
 
-  $stats['Yesterday'] = db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 DAY)")->condition("sc.nid", $nid)
-  ->countQuery()->execute()->fetchField() . '/' . db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 DAY)")->condition("sc.nid", $nid)->groupBy('sc.ip_address')
-  ->countQuery()->execute()->fetchField();
+    $stats['Last Week'] = db_query("SELECT IFNULL(SUM(sc.clicks), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 WEEK)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.clicks_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 WEEK)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
 
-  $stats['Last Week'] = db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 WEEK)")->condition("sc.nid", $nid)
-  ->countQuery()->execute()->fetchField() . '/' . db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 WEEK)")->condition("sc.nid", $nid)->groupBy('sc.ip_address')
-  ->countQuery()->execute()->fetchField();
+    $stats['Last Month'] = db_query("SELECT IFNULL(SUM(sc.clicks), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.clicks_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
 
-  $stats['Last Month'] = db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 MONTH)")->condition("sc.nid", $nid)
-  ->countQuery()->execute()->fetchField() . '/' . db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 MONTH)")->condition("sc.nid", $nid)->groupBy('sc.ip_address')
-  ->countQuery()->execute()->fetchField();
+    $stats['3 Months'] = db_query("SELECT IFNULL(SUM(sc.clicks), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 3 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.clicks_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 3 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
 
-  $stats['3 Months'] = db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 3 MONTH)")->condition("sc.nid", $nid)
-  ->countQuery()->execute()->fetchField() . '/' . db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 3 MONTH)")->condition("sc.nid", $nid)->groupBy('sc.ip_address')
-  ->countQuery()->execute()->fetchField();
+    $stats['6 Months'] = db_query("SELECT IFNULL(SUM(sc.clicks), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 6 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.clicks_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 6 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
 
-  $stats['6 Months'] = db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 6 MONTH)")->condition("sc.nid", $nid)
-  ->countQuery()->execute()->fetchField() . '/' . db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 6 MONTH)")->condition("sc.nid", $nid)->groupBy('sc.ip_address')
-  ->countQuery()->execute()->fetchField();
+    $stats['1 year'] = db_query("SELECT IFNULL(SUM(sc.clicks), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 YEAR)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.clicks_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 YEAR)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
 
-  $stats['1 year'] = db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 YEAR)")->condition("sc.nid", $nid)
-  ->countQuery()->execute()->fetchField() . '/' . db_select($table, 'sc')
-  ->where("FROM_UNIXTIME(sc.timestamp) <= NOW() AND FROM_UNIXTIME(sc.timestamp) >= SUBDATE(NOW(), INTERVAL 1 YEAR)")->condition("sc.nid", $nid)->groupBy('sc.ip_address')
-  ->countQuery()->execute()->fetchField();
+    $stats['All Time'] = db_query("SELECT IFNULL(SUM(sc.clicks), 0) FROM {simpleads_stats} sc WHERE sc.nid = :nid", array(':nid' => $nid))->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.clicks_unique), 0) FROM {simpleads_stats} sc WHERE sc.nid = :nid", array(':nid' => $nid))->fetchField();
 
-  $stats['All Time'] = db_select($table)->condition('nid', $nid)->countQuery()->execute()->fetchField() . '/' . db_select($table)->condition('nid', $nid)->groupBy('ip_address')->countQuery()->execute()->fetchField();
+  }
 
-  t('Last Hour');
-  t('Today');
+  if ( $table == 'simpleads_impressions' ) {
+
+    $stats['Yesterday'] = db_query("SELECT IFNULL(SUM(sc.impressions), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 DAY)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.impressions_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 DAY)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
+
+    $stats['Last Week'] = db_query("SELECT IFNULL(SUM(sc.impressions), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 WEEK)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.impressions_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 WEEK)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
+
+    $stats['Last Month'] = db_query("SELECT IFNULL(SUM(sc.impressions), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.impressions_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
+
+    $stats['3 Months'] = db_query("SELECT IFNULL(SUM(sc.impressions), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 3 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.impressions_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 3 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
+
+    $stats['6 Months'] = db_query("SELECT IFNULL(SUM(sc.impressions), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 6 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.impressions_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 6 MONTH)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
+
+    $stats['1 year'] = db_query("SELECT IFNULL(SUM(sc.impressions), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 YEAR)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.impressions_unique), 0) FROM {simpleads_stats} sc
+      WHERE STR_TO_DATE(sc.date, '%Y%m%d') <= NOW() AND STR_TO_DATE(sc.date, '%Y%m%d') >= SUBDATE(NOW(), INTERVAL 1 YEAR)
+      AND sc.nid = :nid", array(':nid' => $nid))
+    ->fetchField();
+
+    $stats['All Time'] = db_query("SELECT IFNULL(SUM(sc.impressions), 0) FROM {simpleads_stats} sc WHERE sc.nid = :nid", array(':nid' => $nid))->fetchField() . '/' . db_query("SELECT IFNULL(SUM(sc.impressions_unique), 0) FROM {simpleads_stats} sc WHERE sc.nid = :nid", array(':nid' => $nid))->fetchField();
+
+  }
+
   t('Yesterday');
   t('Last Week');
   t('Last Month');

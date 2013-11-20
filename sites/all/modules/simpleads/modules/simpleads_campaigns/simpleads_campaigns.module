@@ -8,6 +8,28 @@
 require_once("campaigns.helper.inc");
 
 /**
+ * Implements hook_node_info().
+ */
+function simpleads_campaigns_node_info() {
+  $t = get_t();
+  return array(
+    'simpleads_campaign' => array(
+      'title_label' => $t('Campaign Title'),
+      'name' => $t('Simple Ad Campaign'),
+      'base' => 'simpleads_campaign',
+      'description' => $t('Advertisement Campaign'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_form().
+ */
+function simpleads_campaign_form($node, $form_state) {
+  return node_content_form($node, $form_state);
+}
+
+/**
  * Implements hook_menu().
  */
 function simpleads_campaigns_menu() {
@@ -59,7 +81,7 @@ function simpleads_campaigns_permission() {
  */
 function simpleads_campaigns_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'simpleads_node_form') {
-    $lang = $form['language']['#value'];
+    $lang = array_key_exists('#value', $form['language']) ? $form['language']['#value'] : $form['language']['#default_value'];
     $campaigns = array(
       '_none' => t('- None -'),
     );

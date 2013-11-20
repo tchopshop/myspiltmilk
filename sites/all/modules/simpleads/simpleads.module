@@ -11,6 +11,28 @@ include("includes/simpleads.filter.inc");
 include("includes/simpleads.integration.inc");
 
 /**
+ * Implements hook_node_info().
+ */
+function simpleads_node_info() {
+  $t = get_t();
+  return array(
+    'simpleads' => array(
+      'title_label' => $t('Advertisement Title'),
+      'name' => $t('Simple Ad'),
+      'base' => 'simpleads',
+      'description' => $t('Advertisement'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_form().
+ */
+function simpleads_form($node, $form_state) {
+  return node_content_form($node, $form_state);
+}
+
+/**
  * Implements hook_menu().
  */
 function simpleads_menu() {
@@ -127,7 +149,7 @@ function simpleads_permission() {
  * Implements hook_node_access().
  */
 function simpleads_node_access($node, $op, $account) {
-  if (isset($node->type) && $node->type == 'simpleads' && $op == 'view' && !user_access('administer nodes', $account)) {
+  if (isset($node->type) && $node->type == 'simpleads' && $op == 'view' && !user_access('access ad node', $account)) {
     return NODE_ACCESS_DENY;
   }
 }
@@ -166,6 +188,7 @@ function simpleads_node_presave($node) {
 function simpleads_node_delete($node) {
   _simpleads_delete_click($node);
   _simpleads_delete_impression($node);
+  _simpleads_delete_aggregated($node);
 }
 
 /**
@@ -369,6 +392,7 @@ function _simpleads_access_callback() {
  *   rendered HTML template.
  */
 function _simpleads_show_ads($tid, $limit) {
+  drupal_page_is_cacheable(FALSE);
   if (is_numeric($tid)) {
     $nodes = _simpleads_load_ads($tid, $limit);
     print _simpleads_render_ajax_template($nodes, $tid, $limit);
@@ -383,6 +407,9 @@ function _simpleads_show_ads($tid, $limit) {
  */
 function _simpleads_redirect($nid) {
   global $user;
+
+  drupal_page_is_cacheable(FALSE);
+
   if (is_numeric($nid)) {
     $node = node_load($nid);
     $url = "";
@@ -398,7 +425,7 @@ function _simpleads_redirect($nid) {
       $url = $node->field_ad_url[$node->language][0]['value'];
       if (user_access('administer nodes') || user_access('access ad node')) {
         if ($show_message) {
-          drupal_set_message($message, 'warning');
+          drupal_set_message(filter_xss($message), 'warning');
         }
         drupal_goto('node/' . $node->nid);
       }
@@ -437,6 +464,21 @@ function _simpleads_new_group_add() {
 function simpleads_simpleads_redirect($url, $delta) {
   if ($delta == 'default') {
     header("Location: " . $url, TRUE, 301);
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function simpleads_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'simpleads_node_form') {
+    // Hide fields. See simpleads.helper.inc file
+    $fields_to_hide = variable_get('simpleads_form_alter', array());
+    if (count($fields_to_hide)) {
+      foreach ($fields_to_hide as $field) {
+        unset($form[$field]);
+      }
+    }
   }
 }
 
@@ -572,8 +614,8 @@ function simpleads_simpleads_order_info() {
   if (module_exists('nodequeue')) {
     $qids = nodequeue_get_qids('simpleads');
     foreach ($qids as $row) {
-      $nq = db_select('nodequeue_queue', 'nq')->fields('nq', array('name', 'title'))->condition('nq.qid', $row->qid)->execute()->fetchObject();
-      $delta[$nq->name] = t('Nodequeue: @name', array('@name' => $nq->title));
+      $nq = db_select('nodequeue_queue', 'nq')->fields('nq', array('qid', 'name', 'title'))->condition('nq.qid', $row->qid)->execute()->fetchObject();
+      $delta['nqueue_' . $nq->qid] = t('Nodequeue: @name', array('@name' => $nq->title));
     }
   }
   return $delta;
@@ -586,8 +628,11 @@ function simpleads_simpleads_order($delta, $term_ids, $limit) {
 
   $query = db_select('node', 'n');
   $query->join('taxonomy_index', 'ti', 'n.nid = ti.nid');
+  $query->join('field_data_field_ad_status', 'f', 'n.nid = f.entity_id');
   $query->fields('n', array('nid'));
   $query->condition('n.type', 'simpleads');
+  $query->condition('f.entity_type', 'node');
+  $query->condition('f.field_ad_status_value', 1);
   $query->condition('ti.tid', $term_ids, 'IN');
   $query->condition('n.status', 1);
   $query->range(0, $limit);
@@ -617,7 +662,7 @@ function simpleads_simpleads_order($delta, $term_ids, $limit) {
   if (module_exists('nodequeue')) {
     $qids = nodequeue_get_qids('simpleads');
     foreach ($qids as $row) {
-      if ($delta == 'queue_' . $row->qid) {
+      if ($delta == 'nqueue_' . $row->qid) {
         $query = db_select('nodequeue_nodes', 'nn');
         $query->fields('nn', array('nid'));
         $query->condition('nn.qid', $row->qid);
@@ -642,4 +687,80 @@ function simpleads_cron() {
     $node = node_load($ad->nid);
     _simpleads_activate_deactive_ad($node);
   }
+
+  $timestamp = variable_get('simpleads_last_aggregation_time', 0);
+
+  if ( date( 'm-d-Y', $timestamp ) != date( 'm-d-Y', REQUEST_TIME ) ) {
+
+    $result = db_query("SELECT
+        FROM_UNIXTIME(s.timestamp, '%Y%m%d') AS date,
+        s.nid, COUNT(*) AS all_count,
+        COUNT(DISTINCT s.ip_address) AS unique_count
+      FROM {simpleads_impressions} s
+      WHERE FROM_UNIXTIME(s.timestamp, '%Y%m%d') != FROM_UNIXTIME(UNIX_TIMESTAMP(), '%Y%m%d')
+      GROUP BY date, s.nid");
+
+    $nids = array();
+
+    foreach ( $result as $row ) {
+
+      db_merge('simpleads_stats')
+      ->key(array('nid' => $row->nid, 'date' => $row->date))
+      ->fields(array(
+        'nid' => $row->nid,
+        'date' => $row->date,
+        'clicks' => 0,
+        'clicks_unique' => 0,
+        'impressions' => $row->all_count,
+        'impressions_unique' => $row->unique_count,
+      ))
+      ->execute();
+
+      if ( !in_array($row->nid, $nids) ) {
+        $nids[] = $row->nid;
+      }
+
+    }
+
+    $result = db_query("SELECT
+        FROM_UNIXTIME(s.timestamp, '%Y%m%d') as date,
+        s.nid,
+        COUNT(*) as all_count,
+        COUNT(DISTINCT s.ip_address) as unique_count
+      FROM {simpleads_clicks} s
+      WHERE FROM_UNIXTIME(s.timestamp, '%Y%m%d') != FROM_UNIXTIME(UNIX_TIMESTAMP(), '%Y%m%d')
+      GROUP BY date, s.nid");
+
+    foreach ( $result as $row ) {
+
+      db_update('simpleads_stats')
+      ->fields(array(
+        'clicks' => $row->all_count,
+        'clicks_unique' => $row->unique_count,
+      ))
+      ->condition('date', $row->date)
+      ->condition('nid', $row->nid)
+      ->execute();
+
+      if ( !in_array($row->nid, $nids) ) {
+        $nids[] = $row->nid;
+      }
+
+    }
+
+    if ( count($nids) ) {
+
+      db_query("DELETE FROM {simpleads_impressions}
+        WHERE nid IN (" . join(', ', $nids) . ")
+          AND FROM_UNIXTIME(timestamp, '%Y%m%d') != FROM_UNIXTIME(UNIX_TIMESTAMP(), '%Y%m%d')");
+      db_query("DELETE FROM {simpleads_clicks}
+        WHERE nid IN (" . join(', ', $nids) . ")
+          AND FROM_UNIXTIME(timestamp, '%Y%m%d') != FROM_UNIXTIME(UNIX_TIMESTAMP(), '%Y%m%d')");
+
+    }
+
+    variable_set('simpleads_last_aggregation_time', REQUEST_TIME);
+
+  }
+
 }

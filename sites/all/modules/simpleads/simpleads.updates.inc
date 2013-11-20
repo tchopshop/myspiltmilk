@@ -533,7 +533,7 @@ function simpleads_update_7004(&$sandbox) {
 }
 
 /**
- * Create a new field for Ad status. Disalbe comments on SimpleAds content type.
+ * Create a new field for Ad status. Disable comments in SimpleAds content type.
  */
 function simpleads_update_7005(&$sandbox) {
 
@@ -605,6 +605,7 @@ function simpleads_update_7005(&$sandbox) {
   $result = db_select('node', 'n')
     ->fields('n', array('nid'))
     ->condition('n.status', 1)
+    ->condition('n.type', 'simpleads')
     ->execute();
   foreach ($result as $row) {
     $node = node_load($row->nid);
@@ -616,4 +617,52 @@ function simpleads_update_7005(&$sandbox) {
   variable_set('menu_options_simpleads', array());
   variable_set('node_options_simpleads', array());
   variable_set('comment_simpleads', 1);
+}
+
+/**
+ * Create SimpleAds aggregated stats table.
+ */
+function simpleads_update_7006(&$sandbox) {
+
+  $schema['simpleads_stats'] = array(
+    'description' => 'Advertisement aggregated stats',
+    'fields' => array(
+      'nid'  => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Advertisement node ID',
+      ),
+      'date' => array(
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Stats day',
+      ),
+      'clicks' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Clicks counter',
+      ),
+      'clicks_unique' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Clicks counter',
+      ),
+      'impressions' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Impressions counter',
+      ),
+      'impressions_unique' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Impressions counter',
+      ),
+    ),
+    'primary key' => array('nid', 'date'),
+  );
+
+  db_create_table('simpleads_stats', $schema['simpleads_stats']);
+
 }

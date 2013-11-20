@@ -9,8 +9,11 @@ REQUIREMENTS:
 * Libraries. http://drupal.org/project/libraries
 * DOM Window. http://drupal.org/project/domwindow
 * DOM Window jQuery Plugin. http://swip.codylindley.com/DOMWindowDemo.html
-* Video Embed. http://drupal.org/project/Field video_embed_field
+* Image Cache Actions 7.x-1.0 http://drupal.org/project/imagecache_actions
+* System Stream Wrapper http://drupal.org/project/system_stream_wrapper
+* Video Embed.Field http://drupal.org/project/video_embed_field
 
+* System Stream Wrapper is only needed if you want to use ICA 7.x-1.1 or greater
 
 INSTALLATION:
 -------------

@@ -58,6 +58,7 @@ function ctools_entity_field_content_type_content_types() {
                   '@field_name' => $field_name,
                 )),
               ),
+              'ctools_entity_field_content_type_formatter_styles' => t('Formatter Styles'),
             ),
           );
         }
@@ -153,6 +154,10 @@ function ctools_entity_field_content_type_render($subtype, $conf, $panel_args, $
   $clone->{$field_name}[$language] = $all_values;
   $field_output = field_view_field($entity_type, $clone, $field_name, $field_settings, $language);
 
+  if (!empty($field_output) && !empty($conf['override_title'])) {
+    $field_output['#title'] = filter_xss_admin($conf['override_title_text']);
+  }
+
   // Build the content type block.
   $block = new stdClass();
   $block->module  = 'entity_field';
@@ -200,25 +205,24 @@ function ctools_entity_field_content_type_formatter_options($form, &$form_state)
     '#title' => t('Select a formatter'),
     '#options' => $formatter_options,
     '#default_value' => $conf['formatter'],
-    '#ajax' => array(
-      'wrapper' => 'ctools-content-entity-field-formatter-settings',
-      'callback' => 'ctools_entity_field_content_type_formatter_change',
-    ),
-    '#submit' => array('ctools_entity_field_content_type_formatter_options_submit_temporary'),
-    '#executes_submit_callback' => TRUE,
   );
 
-  // Load the files to be able to execute the submit/ajax callback
-  $form_state['build_info']['files'][] = array(
-    'type' => 'inc',
-    'module' => 'ctools',
-    'name' => 'plugins/content_types/entity_context/entity_field',
-  );
-  $form_state['build_info']['files'][] = array(
-    'type' => 'inc',
-    'module' => 'ctools',
-    'name' => 'includes/fields',
-  );
+  return $form;
+}
+
+function ctools_entity_field_content_type_formatter_options_submit($form, &$form_state) {
+  $form_state['conf']['formatter'] = $form_state['values']['formatter'];
+  $form_state['conf']['label'] = $form_state['values']['label'];
+}
+
+function ctools_entity_field_content_type_formatter_styles($form, &$form_state) {
+  if (!$form_state['conf']['formatter_settings']) {
+    $form_state['conf']['formatter_settings'] = array();
+  }
+  $conf = $form_state['conf'];
+  $subtype = $form_state['subtype_name'];
+  list($entity_type, $field_name) = explode(':', $subtype, 2);
+  $field = field_info_field($field_name);
 
   ctools_form_include($form_state, 'field_ui.admin', 'field_ui', '');
   ctools_form_include($form_state, 'fields');
@@ -228,20 +232,11 @@ function ctools_entity_field_content_type_formatter_options($form, &$form_state)
     '#value' => array(),
   );
 
-  // Wrap the formatter settings in a new div, to allow an ajax update.
-  ctools_include('fields');
-  $form['settings']['#prefix'] = '<div id="ctools-content-entity-field-formatter-settings">';
-  ctools_fields_get_field_formatter_settings_form($field, $conf['formatter'], $form, $form_state, 'ctools', 'settings');
-  $form['settings']['#suffix'] = '</div>';
-
-
+  ctools_fields_get_field_formatter_settings_form($field, $conf['formatter'], $form, $form_state);
   return $form;
 }
 
-function ctools_entity_field_content_type_formatter_options_submit($form, &$form_state) {
-  $form_state['conf']['formatter'] = $form_state['values']['formatter'];
-  $form_state['conf']['label'] = $form_state['values']['label'];
-
+function ctools_entity_field_content_type_formatter_styles_submit($form, &$form_state) {
   $fields = $form_state['values']['ctools_field_list'];
   $formatter_info = ctools_fields_get_field_formatter_info($fields);
   foreach ($formatter_info as $info) {
@@ -268,18 +263,4 @@ function ctools_entity_field_content_type_admin_title($subtype, $conf, $context)
   list($bundle, $field_name) = explode(':', $subtype);
   ctools_include('fields');
   return t('"@s" @field', array('@s' => $context->identifier, '@field' => ctools_field_label($field_name)));
-}
-
-
-
-function ctools_entity_field_content_type_formatter_change($form, &$form_state) {
-  return $form['settings'];
-}
-
-function ctools_entity_field_content_type_formatter_options_submit_temporary($form, &$form_state) {
-  $form_state['conf']['formatter'] = $form_state['values']['formatter'];
-  $form_state['conf']['label'] = $form_state['values']['label'];
-
-  $form_state['rebuild'] = TRUE;
-  $form_state['rerender'] = TRUE;
 }

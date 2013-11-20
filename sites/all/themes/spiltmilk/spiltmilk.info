@@ -20,6 +20,7 @@
   ; Uncomment to load basic print styles.
    stylesheets[print][] = css/print.css
    stylesheets[screen][] = css/milk.css
+   stylesheets[all][] = css/mail.css
 
   ; Internet Explorer Stylesheets
   ;

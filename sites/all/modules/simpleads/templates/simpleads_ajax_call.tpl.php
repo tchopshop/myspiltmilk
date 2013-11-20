@@ -11,8 +11,8 @@
 (function ($) {
   $(document).ready(function() {
     $("div#<?php print $settings['block_delta']; ?>").simpleads_rotator({
-      rotation_type: <?php print $settings['ads_rotation_type']; ?>, 
-      delay: <?php print $settings['ads_rotation_delay'] * 1000; ?>, 
+      rotation_type: <?php print $settings['ads_rotation_type']; ?>,
+      delay: <?php print $settings['ads_rotation_delay'] * 1000; ?>,
       delta: '<?php print $settings['block_delta']; ?>'
     });
   });

@@ -7,23 +7,23 @@
  * by YouTube, available at http://youtube.com/.
  *
  * @TODO:
- * Tie in YouTube API.
- * Allow editors to put in a youtube username to display on the browser.
- * Allow editors to log in w/ their credentials.
- * Allow editors to upload videos to YouTube.
+ * Get the YouTube tab working.
+ *  - Search by video name, user name, and channel.
+ *  - Default to user's channel videos.
+ * Review all code and remove cruft.
+ * Assess if M:YT 3.x could be formatters added on to the OEmbed module.
  */
 
-// A registry of variable_get defaults.
-include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'media_youtube') . '/includes/media_youtube.variables.inc';
-
-// Hooks and callbacks for integrating with Styles module for display.
-// @todo Can save a little overhead for people without Styles module by wrapping
-//   this inside a module_exists('styles'). However, is that safe to do in
-//   global context? If not, is there any down side to doing it in hook_init()?
-include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'media_youtube') . '/includes/media_youtube.styles.inc';
+/**
+ * This is the rest point for the YouTube api.
+ *
+ * Avoid using the gdata api url when possible. Too many calls will result in
+ * throttling and 403 errors.
+ */
+define('MEDIA_YOUTUBE_REST_API', 'https://gdata.youtube.com/feeds/api/videos');
 
 // Hooks and callbacks for integrating with File Entity module for display.
-include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'media_youtube') . '/includes/media_youtube.formatters.inc';
+require_once dirname(__FILE__) . '/includes/media_youtube.formatters.inc';
 
 /**
  * Implements hook_media_internet_providers().
@@ -31,7 +31,6 @@ include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'media_youtube') . '/
 function media_youtube_media_internet_providers() {
   $info['MediaInternetYouTubeHandler'] = array(
     'title' => t('YouTube'),
-    'image' => drupal_get_path('module', 'media_youtube') . '/images/stream-youtube.png',
   );
 
   return $info;
@@ -56,32 +55,11 @@ function media_youtube_stream_wrappers() {
  */
 function media_youtube_theme($existing, $type, $theme, $path) {
   return array(
-    'media_youtube_preview_style' => array(
-      'variables' => array('style_name' => NULL),
-      'file' => 'media_youtube.theme.inc',
-      'path' => $path . '/includes/themes',
-    ),
-    'media_youtube_field_formatter_styles' => array(
-      'variables' => array('element' => NULL, 'style' => NULL),
-      'file' => 'media_youtube.theme.inc',
-      'path' => $path . '/includes/themes',
-    ),
-    // Note that all the variables after options are now deprecated.
     'media_youtube_video' => array(
-      'variables' => array('uri' => NULL, 'options' => array(), 'width' => NULL, 'height' => NULL, 'autoplay' => NULL, 'fullscreen' => NULL, 'related' => NULL),
+      'variables' => array('uri' => NULL, 'options' => array()),
       'file' => 'media_youtube.theme.inc',
-      'path' => $path . '/includes/themes',
+      'path' => $path . '/themes',
       'template' => 'media-youtube-video',
-    ),
-    'media_youtube_embed' => array(
-      'variables' => array('style_name' => NULL, 'uri' => NULL, 'alt' => NULL, 'title' => NULL),
-      'file' => 'media_youtube.theme.inc',
-      'path' => $path . '/includes/themes',
-    ),
-    'media_youtube_styles' => array(
-      'variables' => array('element' => NULL, 'style' => NULL),
-      'file' => 'media_youtube.theme.inc',
-      'path' => $path . '/includes/themes',
     ),
   );
 }
@@ -90,8 +68,8 @@ function media_youtube_theme($existing, $type, $theme, $path) {
  * Implements hook_media_parse().
  *
  * @todo This hook should be deprecated. Refactor Media module to not call it
- *   any more, since media_internet should be able to automatically route to the
- *   appropriate handler.
+ * any more, since media_internet should be able to automatically route to the
+ * appropriate handler.
  */
 function media_youtube_media_parse($embed_code) {
   $handler = new MediaInternetYouTubeHandler($embed_code);
@@ -99,29 +77,23 @@ function media_youtube_media_parse($embed_code) {
 }
 
 /**
- * Implements hook_media_format_form_prepare_alter().
+ * Implements hook_file_mimetype_mapping_alter().
+ *
+ * Register the video/youtube mimetype.
  */
-function media_youtube_media_format_form_prepare_alter(&$form, &$form_state, $media) {
-  $settings = array('autosubmit' => ($media->type == "video"));
-  drupal_add_js(array('media_format_form' => $settings), 'setting');
+function media_youtube_file_mimetype_mapping_alter(&$mapping) {
+  $mapping['mimetypes'][] = 'video/youtube';
 }
 
 /**
- * Implements hook_ctools_plugin_api().
+ * YouTube search tab for the Media browser.
  */
-function media_youtube_ctools_plugin_api($owner, $api) {
-  static $api_versions = array(
-    'file_entity' => array(
-      'file_default_displays' => 1,
-    ),
-  );
-  if (isset($api_versions[$owner][$api])) {
-    return array('version' => $api_versions[$owner][$api]);
-  }
-}
 
 /**
  * Implements hook_media_browser_plugin_info().
+ *
+ * Commented out for release versions, active in dev versions. To enable the
+ * YouTube media browser tab, uncomment this function.
  */
 function media_youtube_media_browser_plugin_info() {
   $info['youtube'] = array(
@@ -131,7 +103,6 @@ function media_youtube_media_browser_plugin_info() {
 
   return $info;
 }
-
 
 /**
  * Provides a form for adding media items from YouTube search.
@@ -153,13 +124,15 @@ function media_youtube_add($form, &$form_state = array()) {
     '#value' => t('Apply'),
   );
 
-  // This is our ghetto pager.
+  // This is our half-assed pager.
   $page = isset($_GET['page-yt']) ? $_GET['page-yt'] : 0;
   if (isset($form_state['input']['search'])) {
     // Reset the pager when we press apply.
     $page = 0;
   }
-  $search = media_youtube_video_search(array('q' => $term,'max-results' => 12, 'start-index' => $page * 12 + 1));
+  if (!empty($term)) {
+    $search = media_youtube_video_search(array('q' => $term, 'max-results' => 12, 'start-index' => $page * 12 + 1));
+  }
   $form['videos']['#prefix'] = '<div id="container"><div id="scrollbox"><ul id="media-browser-library-list" class="media-list-thumbnails">';
   $form['videos']['#suffix'] = '</ul><div id="status"></div></div></div>';
 
@@ -230,7 +203,7 @@ function media_youtube_add($form, &$form_state = array()) {
     '#markup' => $prev . ' ' . $next,
   );
 
-  $form['sumitted-video'] = array(
+  $form['submitted-video'] = array(
     '#type' => 'hidden',
     '#default_value' => FALSE,
   );
@@ -238,14 +211,13 @@ function media_youtube_add($form, &$form_state = array()) {
   // Add the files to JS so that they are accessible inside the browser
   drupal_add_js(array('media' => array('files' => $files)), 'setting');
 
-    // Add media browser javascript and CSS.
+  // Add media browser javascript and CSS.
   drupal_add_js(drupal_get_path('module', 'media_youtube') . '/js/media-youtube.browser.js');
-  // We need to see if we can deprecate this
-  drupal_add_js(drupal_get_path('module', 'media') . '/js/plugins/media.library.js');
-  // We should abstract this into a standard css file so all implementers have
-  // it by default
-  drupal_add_css(drupal_get_path('module', 'media') . '/js/plugins/media.library.css');
 
+  // @TODO: Remove deprecated library js and css. They're removed in Media,
+  // so let's comment out for now.
+  // drupal_add_js(drupal_get_path('module', 'media') . '/js/plugins/media.library.js');
+  // drupal_add_css(drupal_get_path('module', 'media') . '/js/plugins/media.library.css');
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -254,7 +226,6 @@ function media_youtube_add($form, &$form_state = array()) {
   );
   return $form;
 }
-
 
 /**
  * Allow stream wrappers to have their chance at validation.
@@ -268,7 +239,7 @@ function media_youtube_add_validate($form, &$form_state) {
   if ($form_state['values']['op'] == t('Apply')) {
     return;
   }
-  $uri = $form_state['values']['sumitted-video'];
+  $uri = $form_state['values']['submitted-video'];
   try {
     $file = file_uri_to_object($uri, TRUE);
   }
@@ -281,7 +252,6 @@ function media_youtube_add_validate($form, &$form_state) {
     form_set_error('url', t('Please select a video.'));
     return;
   }
-
 
   $validators = $form['#validators'];
   if ($validators) {
@@ -314,8 +284,11 @@ function media_youtube_add_validate($form, &$form_state) {
   // We need to fix the media_parse_to_file routine to allow for a validation.
 }
 
+/**
+ * @TODO: Document this function.
+ */
 function media_youtube_add_submit($form, &$form_state) {
-  $uri = $form_state['values']['sumitted-video'];
+  $uri = $form_state['values']['submitted-video'];
   try {
     // Save the remote file
     $file = file_uri_to_object($uri, TRUE);
@@ -335,7 +308,9 @@ function media_youtube_add_submit($form, &$form_state) {
   }
 
   // Redirect to the file edit page after submission.
-  if (media_access('edit')) {
+  // @TODO: media_access() is a wrapper for file_entity_access(). Switch to the
+  // new function when Media 1.x is deprecated.
+  if (media_access('update', $file)) {
     $destination = array('destination' => 'admin/content/file');
     if (isset($_GET['destination'])) {
       $destination = drupal_get_destination();
@@ -348,9 +323,42 @@ function media_youtube_add_submit($form, &$form_state) {
   }
 }
 
+/**
+ * @TODO: Document this function.
+ */
 function media_youtube_video_search($options = array()) {
   $options['v'] = 2;
-  return media_retrieve_xml(url(MEDIA_YOUTUBE_REST_API, array('query' => $options)));
+
+  $request = drupal_http_request(url(MEDIA_YOUTUBE_REST_API, array('query' => $options)));
+  if (!isset($request->error)) {
+    $entry = simplexml_load_string($request->data);
+  }
+  else {
+    throw new Exception("Error Processing Request. (Error: {$request->code}, {$request->error})");
+
+    //if request wasn't successful, create object for return to avoid errors
+    $entry = new SimpleXMLElement();
+  }
+
+  return media_youtube_unserialize_xml($entry);
+}
+
+/**
+ * Recursively converts a SimpleXMLElement object into an array.
+ *
+ * @param object $xml
+ *   The original XML object.
+ */
+function media_youtube_unserialize_xml($xml) {
+  if ($xml instanceof SimpleXMLElement) {
+    $xml = (array) $xml;
+  }
+  if (is_array($xml)) {
+    foreach ($xml as $key => $item) {
+      $xml[$key] = media_youtube_unserialize_xml($item);
+    }
+  }
+  return $xml;
 }
 
 /**
@@ -362,6 +370,9 @@ function media_youtube_video_search($options = array()) {
  *   (Defaults to FALSE) If TRUE, then reset the value from the cache.
  * @return boolean
  *   Returns TRUE if the video is valid.
+ *
+ * @TODO: How does this compare to MediaInternetYouTubeHandler's validId
+ * method, and can we refactor the code to rely on only one of them?
  */
 function media_youtube_valid_id($id, $refresh = FALSE) {
   $ids = &drupal_static(__FUNCTION__, array());
@@ -369,6 +380,9 @@ function media_youtube_valid_id($id, $refresh = FALSE) {
   // Return our cached id if allowed, and it exists.
   if (!$refresh && isset($ids[$id])) {
     return $ids[$id];
+  }
+  elseif (!$refresh && !isset($ids[$id])) {
+    return $id;
   }
   elseif (!$refresh && $cache = cache_get('media_youtube:id:' . $id, 'cache_media_xml')) {
     $ids[$id] = $cache->data;

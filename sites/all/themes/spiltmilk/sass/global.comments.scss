@@ -9,25 +9,75 @@
 // Wrapper for the list of comments and its title
 #comments {
   margin: 1.5em 0;
-
-
-  // Heading for the list of comments
   h2 {
-
-
-    // Heading for the list of comments
     &.comment-title {}
-
-
-    // Heading for the comment form
     &.comment-form {}
+  	}
+  	h2.comment-form {
+	font-size: 36px;
+	text-align: left;
+	padding-bottom: 0;
+	color: #1781B8;
   }
+	.all-comments {
+	margin-bottom: 50px;
+	}
 }
-
 
 // Wrapper for a single comment
 .comment {
   margin-bottom: 20px;
+    .content {
+  	background-color: #F2F2F2;
+	padding-bottom: 10px;
+	-webkit-transition-duration: 0.2s;
+	-moz-transition-duration: 0.2s;
+	transition-duration: 0.2s;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	.content-body {
+		padding: 15px 15px 0;
+	}
+	.links {
+	text-align: right;
+	margin: 0 10px 0 0;
+	li {
+	margin-left: 5px;
+	display: inline;
+	list-style-type: none;
+	a {
+	background: rgba(77, 77, 77, .3);
+	-webkit-transition-duration: 0.2s;
+	-moz-transition-duration: 0.2s;
+	transition-duration: 0.2s;
+	padding: 6px 10px 5px;
+	font-size: .75em;
+	line-height: 1.25em;
+	background-color: #CCC;
+	font-weight: bold;
+	color: white;
+	text-transform: uppercase;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	&:hover {
+		text-decoration:none;
+		background-color:#4d4d4d;
+		background:rgba(77,77,77,1)
+	}
+	}
+	}
+	}
+	}
+	div.arrow {
+	width: 26px;
+	height: 23px;
+	float: left;
+	background-repeat: no-repeat;
+	background-image: url(../images/comment-arrow.png);
+	margin: 0px 10px 0px 30px;
+	}
 
 
   // The first comment in the list of comments
@@ -52,6 +102,7 @@
 
   // The "posted by" information wrapper (uses the footer element)
   .submitted {
+	line-height: 3em;
 
 
     // Submitted by elements are wrapped in a paragraph, is the equivalent to .comment footer.submitted > p
@@ -125,4 +176,20 @@ h3.comment-title {}
 .indented {
   // Drupal core uses a 25px left margin
   // margin-left: 25px;
+}
+.comment-form .form-item-name, .comment-form .form-item-mail {
+	float: left;
+	input {
+		width: 90%;
+	}
+}
+.comment-form .form-item-name {
+	width: 40%;
+}
+.comment-form .form-item-mail {
+	width: 60%;
+	input {
+		width: 97%;
+		margin-bottom: 0;
+	}
 }
