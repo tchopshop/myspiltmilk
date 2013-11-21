@@ -4,6 +4,7 @@ sites/*/settings.php.new
 cache
 default
 php.ini
+Archive.zip
 
 # Ignore paths that contain user-generated content.
 sites/*/files
