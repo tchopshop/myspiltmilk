@@ -150,7 +150,7 @@ If you would like to have the characters %5B and %5D please use the html entity 
 
     // We need to have multiple unique IDs, one for each record.
     static $i = 0;
-    $i++;
+    $i = mt_rand();
 
     // Return nothing if no trigger filed is selected.
     if (empty($this->options['trigger_field'])) {
@@ -179,14 +179,17 @@ If you would like to have the characters %5B and %5D please use the html entity 
         'inline' => 'true'
       ),
       'attributes' => array(
-        'class' => 'colorbox-inline',
+        'class' => array('colorbox-inline'),
         'rel' => $gallery_id
       )
     );
     // Remove any parameters that aren't set.
     $link_options['query'] = array_filter($link_options['query']);
 
-    $link_tag = l($link_text, '', $link_options);
+    // If the nid is present make the link degrade to the node page if
+    // JavaScript is off.
+    $link_target = isset($values->nid) ? 'node/' . $values->nid : '';
+    $link_tag = l($link_text, $link_target, $link_options);
 
     // The outside div is there to hide all of the divs because if the specific Colorbox
     // div is hidden it won't show up as a Colorbox.

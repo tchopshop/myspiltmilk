@@ -5,7 +5,6 @@
  * Colorbox theme functions.
  */
 
-
 /**
  * Returns HTML for an Colorbox image field formatter.
  *
@@ -140,7 +139,7 @@ function theme_colorbox_imagefield($variables) {
     'html' => TRUE,
     'attributes' => array(
       'title' => $variables['title'],
-      'class' => implode(' ', $class),
+      'class' => $class,
       'rel' => $variables['gid'],
     )
   );
