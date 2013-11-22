@@ -14,11 +14,17 @@ function simple_field_formatter_field_formatter_info() {
       'settings'  => array( //Array of the settings we'll create
         'custom_prefix' => '', //give a default value for when the form is first loaded
         'custom_suffix' => '', //ditto
+				'custom_str2time' => '',
 				'custom_reverse' => '',
 				'custom_trim' => '',
 				'custom_strtolower' => '',
+				'custom_str_replace' => '',
+				'custom_preg_replace' => '',
+				'custom_str_replace_find' => '',
+				'custom_str_replace_replace' => '',
 				'custom_strtoupper' => '',
 				'custom_ucfirst' => '',
+				'custom_ucwords' => '',
       ),
       // You can usually leave 'multiple values' as follows:
       'multiple values' => FIELD_BEHAVIOR_DEFAULT,
@@ -48,6 +54,12 @@ function simple_field_formatter_field_formatter_settings_form($field, $instance,
     '#description'    => t('Suffix will display after the content.'),  // helper text
     '#default_value'  => $settings['custom_suffix'],               // Get the value if it's already been set
   );
+	$element['custom_str2time'] = array(
+    '#type'           => 'textfield',                        // Use a textbox
+    '#title'          => t('String to Time'),                      // Widget label
+    '#description'    => t('Format the date & time. See the <a target="_blank" href="http://us3.php.net/manual/en/function.date.php">PHP manual</a> for available options. '),  // helper text
+    '#default_value'  => $settings['custom_str2time'],               // Get the value if it's already been set
+  );
 	$element['custom_reverse'] = array(
     '#type'           => 'checkbox',                        // Use a textbox
     '#title'          => t('Reverse'),                      // Widget label
@@ -66,6 +78,40 @@ function simple_field_formatter_field_formatter_settings_form($field, $instance,
     '#description'    => t('Converts a string to lowercase letters.'),  // helper text
     '#default_value'  => $settings['custom_strtolower'],               // Get the value if it's already been set
   );
+	$element['custom_str_replace'] = array(
+    '#type'           => 'checkbox',                        // Use a textbox
+    '#title'          => t('str_replace'),                      // Widget label
+    '#description'    => t('Replaces some characters in a string (case-sensitive).'),  // helper text
+    '#default_value'  => $settings['custom_str_replace'],               // Get the value if it's already been set
+  );
+	$element['custom_preg_replace'] = array(
+    '#type'           => 'checkbox',                        // Use a textbox
+    '#title'          => t('preg_replace'),                      // Widget label
+    '#description'    => t('Perform a regular expression search and replace'),  // helper text
+    '#default_value'  => $settings['custom_preg_replace'],               // Get the value if it's already been set
+  );
+	$field_name = $instance['field_name'];
+	$element_name = 'fields[' . $field_name . '][settings_edit_form][settings][custom_str_replace]';
+	$element_name2 = 'fields[' . $field_name . '][settings_edit_form][settings][custom_preg_replace]';
+	$element['custom_str_replace_find'] = array(
+    '#type'           => 'textfield',                        // Use a textbox
+		'#states' => array('visible' =>
+				array(':input[name="' . $element_name . '"]' =>
+						array('checked' => TRUE),
+						':input[name="' . $element_name2 . '"]' =>
+						array('checked' => TRUE),
+				)
+		),
+    '#title'          => t('Find'),                      // Widget label
+    '#description'    => t('Specifies the value to find.'),  // helper text
+    '#default_value'  => $settings['custom_str_replace_find'],               // Get the value if it's already been set
+  );
+	$element['custom_str_replace_replace'] = array(
+    '#type'           => 'textfield',                        // Use a textbox
+    '#title'          => t('Replace'),                      // Widget label
+    '#description'    => t('Specifies the value to replace the value in find'),  // helper text
+    '#default_value'  => $settings['custom_str_replace_replace'],               // Get the value if it's already been set
+  );	
 	$element['custom_strtoupper'] = array(
     '#type'           => 'checkbox',                        // Use a textbox
     '#title'          => t('strtoupper'),                      // Widget label
@@ -78,6 +124,12 @@ function simple_field_formatter_field_formatter_settings_form($field, $instance,
     '#description'    => t('Converts the first character of a string to uppercase.'),  // helper text
     '#default_value'  => $settings['custom_ucfirst'],               // Get the value if it's already been set
   );
+	$element['custom_ucwords'] = array(
+    '#type'           => 'checkbox',                        // Use a textbox
+    '#title'          => t('ucwords'),                      // Widget label
+    '#description'    => t('Converts the first character of each word in a string to uppercase.'),  // helper text
+    '#default_value'  => $settings['custom_ucwords'],               // Get the value if it's already been set
+  );
   return $element;
 }
 
@@ -87,14 +139,20 @@ function simple_field_formatter_field_formatter_settings_form($field, $instance,
 function simple_field_formatter_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  $summary = t('<strong>Prefix:</strong> @custom_prefix <br/> <strong>Suffix:</strong> @custom_suffix<br/> <strong>Reverse:</strong> @custom_reverse<br/> <strong>Trim:</strong> @custom_trim<br/> <strong>strtolower:</strong> @custom_strtolower<br/> <strong>strtoupper:</strong> @custom_strtoupper<br/> <strong>ucfirst:</strong> @custom_ucfirst', array(
+  $summary = t('<strong>Prefix:</strong> @custom_prefix <br/> <strong>Suffix:</strong> @custom_suffix<br/> <strong>str2Time:</strong> @custom_str2time<br/> <strong>Reverse:</strong> @custom_reverse<br/> <strong>Trim:</strong> @custom_trim<br/> <strong>strtolower:</strong> @custom_strtolower<br/> <strong>str_replace:</strong> @custom_str_replace<br/> <strong>preg_replace:</strong> @custom_preg_replace<br/> <strong>replace_find:</strong> @custom_str_replace_find<br/> <strong>replace_replace:</strong> @custom_str_replace_replace<br/> <strong>strtoupper:</strong> @custom_strtoupper<br/> <strong>ucfirst:</strong> @custom_ucfirst<br/> <strong>ucwords:</strong> @custom_ucwords', array(
     '@custom_prefix'     => $settings['custom_prefix'],
     '@custom_suffix'  => $settings['custom_suffix'],
+		'@custom_str2time'  => $settings['custom_str2time'],
 		'@custom_reverse'  => $settings['custom_reverse'],
 		'@custom_trim'  => $settings['custom_trim'],
 		'@custom_strtolower'  => $settings['custom_strtolower'],
+		'@custom_str_replace'  => $settings['custom_str_replace'],
+		'@custom_preg_replace'  => $settings['custom_preg_replace'],
+		'@custom_str_replace_find'  => $settings['custom_str_replace_find'],
+		'@custom_str_replace_replace'  => $settings['custom_str_replace_replace'],
 		'@custom_strtoupper'  => $settings['custom_strtoupper'],
 		'@custom_ucfirst'  => $settings['custom_ucfirst'],
+		'@custom_ucwords'  => $settings['custom_ucwords'],
   )); // we use t() for translation and placeholders to guard against attacks
   return $summary;
 }
@@ -109,17 +167,27 @@ function simple_field_formatter_field_formatter_view($entity_type, $entity, $fie
   $settings = $display['settings']; // get the settings
   $custom_prefix = $settings['custom_prefix']; 
   $custom_suffix = $settings['custom_suffix']; 
-	
+	$custom_str2time = $settings['custom_str2time']; 
 	$custom_reverse = $settings['custom_reverse']; 
   $custom_trim = $settings['custom_trim']; 
 	$custom_strtolower = $settings['custom_strtolower']; 
+	$custom_str_replace = $settings['custom_str_replace']; 
+	$custom_preg_replace = $settings['custom_preg_replace']; 
+	$custom_str_replace_find = $settings['custom_str_replace_find']; 
+	$custom_str_replace_replace = $settings['custom_str_replace_replace']; 
   $custom_strtoupper = $settings['custom_strtoupper']; 
 	$custom_ucfirst = $settings['custom_ucfirst']; 
+	$custom_ucwords = $settings['custom_ucwords']; 
   
 
   foreach ($items as $delta => $item) {
-    $original_value = $item['safe_value']; // Getting the actual value
-		
+    $original_value = $item['value']; // Getting the actual value
+		if($custom_str_replace){
+			$original_value = str_replace($custom_str_replace_find, $custom_str_replace_replace, $original_value);
+		}
+		if($custom_preg_replace){
+			$original_value = preg_replace($custom_str_replace_find, $custom_str_replace_replace, $original_value);
+		}
 		if($custom_reverse){
 			$original_value = strrev($original_value);
 		}
@@ -127,13 +195,20 @@ function simple_field_formatter_field_formatter_view($entity_type, $entity, $fie
 			$original_value = trim($original_value);
 		}
 		if($custom_strtolower){
-			$original_value = strtolower($original_value);
+			$original_value = mb_strtolower($original_value, 'UTF-8');
 		}
 		if($custom_strtoupper){
-			$original_value = strtoupper($original_value);
+			$original_value = mb_strtoupper($original_value, 'UTF-8');
 		}
 		if($custom_ucfirst){
 			$original_value = ucfirst($original_value);
+		}
+		if($custom_ucwords){
+			$original_value = ucwords($original_value);
+		}
+		if($custom_str2time != ""){
+			$original_value = strtotime($original_value);
+			$original_value = format_date($original_value, 'custom', $custom_str2time);
 		}
 		$modified_value = $custom_prefix . $original_value . $custom_suffix;
 		$element[$delta]['#markup'] = $modified_value;
