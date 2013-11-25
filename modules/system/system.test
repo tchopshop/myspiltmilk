@@ -923,6 +923,16 @@ class AccessDeniedTestCase extends DrupalWebTestCase {
     );
     $node = $this->drupalCreateNode($edit);
 
+    // Check that appending text to the node id fails.
+    $this->drupalGet('node/' . $node->nid);
+    $this->assertResponse(200);
+    $this->drupalGet('node/' . $node->nid . 'garbage');
+    $this->assertResponse(404);
+    $this->drupalGet('node/' . $node->nid . '.000');
+    $this->assertResponse(404);
+    $this->drupalGet('node/-1');
+    $this->assertResponse(404);
+
     // Use a custom 403 page.
     $this->drupalPost('admin/config/system/site-information', array('site_403' => 'node/' . $node->nid), t('Save configuration'));
 
