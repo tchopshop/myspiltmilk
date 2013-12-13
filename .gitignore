@@ -3,6 +3,7 @@ sites/*/settings*.php
 sites/*/settings.php.new
 cache
 default
+error_log
 php.ini
 Archive.zip
 
