@@ -6,7 +6,7 @@ default
 error_log
 php.ini
 Archive.zip
-
+.sass-cache
 # Ignore paths that contain user-generated content.
 sites/*/files
 sites/*/private

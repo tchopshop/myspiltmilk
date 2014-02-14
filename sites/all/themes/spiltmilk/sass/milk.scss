@@ -216,6 +216,58 @@ iframe.twitter-share-button {
 	}
 	}
 }
+#block-menu-menu-top-menu {
+	margin-top: 10px;
+
+	li {
+	float: left;
+	margin-bottom: 0.2em;
+	margin-left: -0.0em;
+	color: #000 ;
+	padding:0 ;
+	margin:0;
+	list-style-type:        none;
+	list-style-image:        none;
+	list-style:             none;
+	display: block;
+	text-transform:capitalize;
+	text-align:center;
+	&:first-child  a {
+		border-left: none;
+		padding-left: 10px;
+		}
+	&:last-child a {
+		border-right: none;
+		}
+	a {
+	font-family: 'Populaire', Helvetica Narrow, Arial Narrow;
+	font-size: 26px;
+	line-height: 1;
+	color: $dark-gray;
+	border: none;
+	background: transparent;
+	padding: 15px 20px;
+	border-right: 1px solid white;
+	border-left: 1px solid #D5D6D6;
+	&.selected {
+	background: transparent!important;
+		}
+	&:hover {
+		background: transparent!important;
+		color: black;
+		}
+	@media screen and (min-width: 321px) and (max-width: 548px) {
+		font-size: 22px;
+		padding: 0 10px;
+	}
+	@media screen and (max-width: 321px) {
+	font-size: 19px;
+    padding: 0 5px;
+	}
+	}
+	}
+}
+
 #block-views-isotope-block #sort-by, #block-views-isotope-block #sort-direction {
 	display: none;
 }
