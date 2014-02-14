@@ -4,7 +4,7 @@
  */
 function quickbar_extras_init() {
   drupal_add_css(drupal_get_path('module', 'quickbar_extras') . '/css/quickbar_extras.css');
-  
+
   if (arg(3) == 'quickbar' && arg(5) == 'edit') {
     drupal_add_js(drupal_get_path('module', 'quickbar_extras') . '/js/quickbar_extras.admin.js');
   }
@@ -18,7 +18,7 @@ function quickbar_extras_form_alter(&$form, &$form_state, $form_id) {
     $rid = $form_state['build_info']['args'][0];
     $menus = unserialize(variable_get('quickbar_role_menus', array()));
     $menu_used = $menus[arg(4)];
-    
+
     $form['quickbar_extras'] = array(
       '#type' => 'fieldset',
       '#title' => t('Extra settings'),
@@ -26,7 +26,7 @@ function quickbar_extras_form_alter(&$form, &$form_state, $form_id) {
       '#collapsed' => 0,
       '#attributes' => array('class' => array('quickbar-extras')),
     );
-    
+
     // Pulls all menu links from the database
     $result = db_query("SELECT mlid, link_title FROM {menu_links}
                        WHERE menu_name = :menu
@@ -34,9 +34,9 @@ function quickbar_extras_form_alter(&$form, &$form_state, $form_id) {
                        AND hidden = 0
                        AND link_path NOT LIKE '%\%%'
                        ORDER BY weight ASC", array(':menu' => $menu_used));
-    
+
     $settings = unserialize(variable_get('quickbar_extras_settings_' . $rid, ''));
-    
+
     $form['quickbar_extras']['organize'] = array(
       '#type' => 'fieldset',
       '#title' => t('Organize Menu Links'),
@@ -44,7 +44,7 @@ function quickbar_extras_form_alter(&$form, &$form_state, $form_id) {
       '#collapsed' => 0,
       '#attributes' => array('class' => array('quickbar-organize')),
     );
-    
+
     while ($record = $result->fetchAssoc()) {
       $mlid = $record['mlid'];
       $title = $record['link_title'];
@@ -59,7 +59,7 @@ function quickbar_extras_form_alter(&$form, &$form_state, $form_id) {
         '#attributes' => array('class' => array('menu-options')),
       );
     }
-    
+
     $form['quickbar_extras']['user'] = array(
       '#type' => 'fieldset',
       '#title' => t('User Settings'),
@@ -96,9 +96,9 @@ function quickbar_extras_form_alter(&$form, &$form_state, $form_id) {
         ),
       ),
     );
-    
+
     $form['#submit'][] = 'quickbar_extras_configure_form_submit';
-    
+
     // Push submit button to bottom of form
     $form['submit']['#weight'] = 1000;
   }
@@ -114,7 +114,7 @@ function quickbar_extras_configure_form_submit(&$form, &$form_state) {
   foreach ($mlids as $mlid => $position) {
     $menu_settings['menu'][$mlid] = $position;
   }
-  
+
   $user_settings = $form_state['values']['quickbar_extras']['user'];
   $menu_settings['show_username'] = $user_settings['show_username'];
   $menu_settings['show_username_prefix'] = $user_settings['options']['show_username_prefix'];
@@ -130,11 +130,11 @@ function quickbar_extras_configure_form_submit(&$form, &$form_state) {
 function quickbar_extras_preprocess_quickbar(&$vars) {
   $roles = unserialize(variable_get('quickbar_role_weights', ''));
   $settings = array();
-  
+
   if (is_array($roles)) {
     // Sort roles
     asort($roles);
-    
+
     // Loop through the roles looking for a role that matches the current users
     // role and also has a menu associated with it.
     foreach($roles as $rid => $weight) {
@@ -144,9 +144,9 @@ function quickbar_extras_preprocess_quickbar(&$vars) {
       }
     }
   }
-  
+
   $menu_keys = array_keys($vars['tree'][0]['admin']);
-  
+
   if (!empty($settings['menu'])) {
     $move_menus = array();
     // We are first going to pull all of the menu ids out of the variable...
@@ -164,22 +164,22 @@ function quickbar_extras_preprocess_quickbar(&$vars) {
         }
       }
     }
-    
+
     if (!empty($move_menus)) {
       foreach ($move_menus as $move_menu) {
         $vars['tree'][0]['right'][$move_menu] = $vars['tree'][0]['admin'][$move_menu];
         unset($vars['tree'][0]['admin'][$move_menu]);
       }
     }
-    
+
     if (!empty($settings['show_username'])) {
       global $user;
-      
+
       $username_prefix = ($settings['show_username_prefix'] ? $settings['show_username_prefix'] : 'Hello, ');
       $username_suffix = ($settings['show_username_suffix'] ? $settings['show_username_suffix'] : '!');
       if ($settings['show_username_link']) {
         $vars['tree'][0]['right']['username'] = array(
-          'title' => $username_prefix . l($user->name, 'user/' . $user->uid, array('attributes' => array('class' => 'username-link'))) . $username_suffix,
+          'title' => $username_prefix . l($user->name, 'user/' . $user->uid, array('attributes' => array('class' => array('username-link')))) . $username_suffix,
           'html' => 1,
         );
       }
