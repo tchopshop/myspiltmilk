@@ -45,7 +45,7 @@
 								<h1 style="font-size:26px;line-height:32px;"><?php print $title; ?></h1>
 								
 								<span style="float:right"><?php print render($build['field_newsletter_image']); ?></span>				
-								<?php print render($build); ?>
+								<?php print render($build['body']); ?>
 								
 																
 
