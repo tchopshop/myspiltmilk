@@ -47,7 +47,7 @@
 								<span style="float:right"><?php print render($build['field_newsletter_image']); ?></span>				
 								<?php print render($build['body']); ?>
 								
-																
+											THIS IS A TEST					
 
 								</td>
 							</tr>
