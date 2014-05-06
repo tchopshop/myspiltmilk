@@ -44,8 +44,8 @@
 								<td style="font-family: Georgia, ‘Times New Roman’, Times, serif;">
 								<h1 style="font-size:26px;line-height:32px;"><?php print $title; ?></h1>
 								
-								
-								<?php print render($build); ?>
+								<span style="float:right"><?php print render($build['field_newsletter_image']); ?></span>				
+								<?php print render($build['body']); ?>
 								
 																
 

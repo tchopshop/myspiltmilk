@@ -29,7 +29,7 @@
  */
 ?>
 <table width="585" border="0" align="center" cellpadding="10" cellspacing="0">
-<p>You are receiving this newsletter because you signed up to receive updates from MySpiltMilk.com, music and culture website by Alex Rawls.<br />
+<p>You are receiving this newsletter because you signed up to receive updates from MySpiltMilk.com, <br />music and culture website by Alex Rawls.<br />
 3805 Laurel St., New Orleans, LA 70115 | 504-813-1576<br />
 If you have questions you can email us at alex@myspiltmilk.com or click the link below to unsubscribe.</p>
 
