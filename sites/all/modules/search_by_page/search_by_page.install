@@ -53,6 +53,11 @@ function search_by_page_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'page_data' => array(
+        'description' => 'Page contents as of last index',
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
       'environment' => array(
         'description' => 'Environment ID',
         'type' => 'int',
@@ -154,9 +159,7 @@ function search_by_page_uninstall() {
 }
 
 /**
- * Implements hook_update_N().
- *
- * Adds language, environment, and uid fields to sbp_path table.
+ * Add language, environment, and uid fields to sbp_path table.
  */
 function search_by_page_update_6000() {
   db_add_field('sbp_path', 'language', array(
@@ -229,13 +232,12 @@ function search_by_page_update_6000() {
     ->fields(array(
         'language' => $lang,
         'environment' => 1,
-      ));
+      ))
+    ->execute();
 }
 
 /**
- * Implements hook_update_N().
- *
- * Activates Search by Page as an active Search module, if upgrading from 6.x.
+ * Activate Search by Page as an active Search module, if upgrading from 6.x.
  */
 function search_by_page_update_7000() {
   $active = variable_get('search_active_modules', array('node', 'user'));
@@ -246,9 +248,7 @@ function search_by_page_update_7000() {
 }
 
 /**
- * Implements hook_update_N().
- *
- * Adds role index to {sbp_path}, and new database table for indexing users.
+ * Add role index to {sbp_path}, and new database table for indexing users.
  */
 function search_by_page_update_7001() {
   // This update function only needs to be run if it wasn't previously
@@ -289,9 +289,7 @@ function search_by_page_update_7001() {
 }
 
 /**
- * Implements hook_update_N().
- *
- * Adds fields to sbp_path table and cron setting default.
+ * Add fields to sbp_path table and cron setting default.
  */
 function search_by_page_update_7002() {
   db_add_field('sbp_path', 'min_time', array(
@@ -313,4 +311,24 @@ function search_by_page_update_7002() {
     ));
 
   variable_set('sbp_cron_limit', variable_get('search_cron_limit', 100));
+}
+
+/**
+ * Add field to sbp_path table, and mark all pages for reindex.
+ */
+function search_by_page_update_7003() {
+  // Add the new field for the page data.
+  db_add_field('sbp_path', 'page_data', array(
+      'description' => 'Page contents as of last index',
+      'type' => 'text',
+      'not null' => FALSE,
+    ));
+
+  // Mark everything as needing indexing.
+  db_update('sbp_path')
+    ->fields(array('last_index_time' => 0))
+    ->execute();
+
+  // Tell the user they need to run cron to reindex.
+  return t('Search by Page has reset its search index. Run cron until everything is indexed.');
 }

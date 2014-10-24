@@ -143,9 +143,8 @@ function sbp_nodes_sbp_details($id, $environment, $keys = NULL) {
   // See if we want to display an excerpt or a teaser
 
   if (search_by_page_setting_get('sbp_nodes_display_type', $environment, 'excerpts') == 'excerpts') {
-    $content = search_by_page_page_content('node/' . $id);
-    if (!is_int($content)) {
-      $content = search_by_page_strip_tags($content, $environment);
+    $content = search_by_page_stored_page_content('sbp_nodes', $id, $environment);
+    if ($content) {
       $ret['snippet'] = search_by_page_excerpt($keys, $content);
     }
   }

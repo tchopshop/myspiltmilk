@@ -96,6 +96,9 @@ function sbp_attach_sbp_paths($environment) {
       ->fieldCondition($field_name);
 
     $results = $query->execute();
+    if (!$results) {
+      continue;
+    }
     $objs = entity_load('node', array_keys($results['node']));
     if (!count($objs)) {
       continue;

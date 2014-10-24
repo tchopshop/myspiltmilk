@@ -448,7 +448,9 @@ function search_by_page_path_field_prefix() {
  * Returns the content portion of the rendered page at the given path.
  *
  * Note: As a side effect, theme, pager, and page title variables may be
- * altered. The calling function needs to make sure they are restored.
+ * altered. The calling function needs to make sure they are restored. Do not
+ * call this during rendering of search results! Use
+ * search_by_page_stored_page_content() instead.
  *
  * @param $path
  *    Path to render.
@@ -512,6 +514,29 @@ function search_by_page_page_content($path) {
   drupal_static_reset('menu_tree_page_data');
   drupal_static_reset('menu_get_item');
   return $content;
+}
+
+/**
+ * Returns the stored content from the last indexing of a page.
+ *
+ * @param string $module
+ *   Name of the module for the path.
+ * @param int $modid
+ *   ID of this path within this module.
+ * @param int $environment
+ *   ID of the environment.
+ *
+ * @return string
+ *   The stored content from last indexing of the page.
+ */
+function search_by_page_stored_page_content($module, $modid, $environment) {
+  return db_select('sbp_path', 'p')
+    ->fields('p', array('page_data'))
+    ->condition('from_module', $module)
+    ->condition('modid', $modid)
+    ->condition('environment', $environment)
+    ->execute()
+    ->fetchField();
 }
 
 /**
@@ -679,21 +704,6 @@ function search_by_page_search_execute($keys = NULL, $conditions = NULL) {
 
   $stuff = $query->execute();
 
-  // Save global pager information and page title, because rendering
-  // can screw this up.
-  $title = drupal_get_title();
-  $tmp_parray = $pager_page_array[0];
-  $tmp_ptotal = $pager_total[0];
-  $tmp_itotal = $pager_total_items[0];
-  $tmp_breadcrumb = drupal_get_breadcrumb();
-  $tmp_trail = menu_get_active_trail();
-  $tmp_menu = menu_get_item();
-
-  // Use PHP's output buffering to prevent any output during rendering.
-  // Some modules print things directly when rendering the page, which is
-  // not good practice, but so it goes.
-  ob_start();
-
   // Create array of formatted results for Search
 
   $results = array();
@@ -735,24 +745,6 @@ function search_by_page_search_execute($keys = NULL, $conditions = NULL) {
 
     $results[] = $res;
   }
-
-  // Reset page title and pager stuff.
-  drupal_set_title($title);
-  $pager_page_array[0] = $tmp_parray;
-  $pager_total[0] = $tmp_ptotal;
-  $pager_total_items[0] = $tmp_itotal;
-  drupal_static_reset('menu_get_item');
-  menu_set_item(NULL, $tmp_menu);
-  drupal_set_breadcrumb($tmp_breadcrumb);
-  menu_set_active_trail($tmp_trail);
-  ob_end_clean();
-  drupal_static_reset('system_main_content_added');
-  drupal_static_reset('drupal_set_page_content');
-  drupal_static_reset('menu_local_tasks');
-  drupal_static_reset('menu_local_tasks:root_path');
-  drupal_static_reset('menu_tree_set_path');
-  drupal_static_reset('menu_tree_page_data');
-  _search_by_page_setup_theme();
 
   return $results;
 }
@@ -865,6 +857,11 @@ function search_by_page_update_index() {
 
       // Add to search index (already marked as updated).
       search_index($item->pid, 'search_by_page', $content);
+      // Add to SBP table.
+      db_update('sbp_path')
+        ->condition('pid', $item->pid)
+        ->fields(array('page_data' => $content))
+        ->execute();
     }
     else {
       $con = $content;
@@ -1073,7 +1070,7 @@ function search_by_page_block_info() {
 
     $ret[$envid] = array(
       'info' => t('Search by page @environment', array('@environment' => $envname)),
-      'cache' => DRUPAL_CACHE_GLOBAL,
+      'cache' => DRUPAL_NO_CACHE,
     );
   }
 

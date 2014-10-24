@@ -131,11 +131,10 @@ function sbp_users_sbp_details($id, $environment, $keys = NULL) {
     'title' => check_plain($user->name),
   );
 
-  // Render this user, to get snippet
+  // Get snippet from stored page data.
   if ($keys) {
-    $content = search_by_page_page_content('user/' . $id);
-    if (!is_int($content)) {
-      $content = search_by_page_strip_tags($content, $environment);
+    $content = search_by_page_stored_page_content('sbp_user', $id, $environment);
+    if ($content) {
       $ret['snippet'] = search_by_page_excerpt($keys, $content);
     }
   }

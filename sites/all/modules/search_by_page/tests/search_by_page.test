@@ -1376,6 +1376,15 @@ class SearchByPagePathsTest extends SearchByPageTester {
     $this->drupalGet('sbp_test_another_page');
     $this->assertText('Trees', "Another page can be seen.");
 
+    // Verify that the non-priv user can see only some of the pages.
+    $this->drupalLogin($this->noprivuser);
+    $this->drupalGet('sbp_test_priv_page');
+    $this->assertNoText('Trees', "Private page cannot be seen.");
+    $this->drupalGet('sbp_test_pub_page');
+    $this->assertText('Trees', "Public page can be seen.");
+    $this->drupalGet('sbp_test_another_page');
+    $this->assertText('Trees', "Another page can be seen.");
+
     $this->drupalLogin($this->superuser);
 
     // Set up indexing of pages.

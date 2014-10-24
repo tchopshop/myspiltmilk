@@ -29,9 +29,9 @@ features[variable][] = node_preview_news
 features[variable][] = node_submitted_news
 features[views_view][] = free_pager_section_browser
 
-; Information added by drupal.org packaging script on 2013-10-03
+; Information added by Drupal.org packaging script on 2014-05-10
 version = "7.x-2.x-dev"
 core = "7.x"
 project = "freepager"
-datestamp = "1380806398"
+datestamp = "1399748627"
 

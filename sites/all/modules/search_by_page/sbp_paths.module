@@ -77,6 +77,8 @@ function sbp_paths_sbp_query_modify($environment, $query) {
   $query->leftJoin($table, 'sbpp_p', 'sbpp_p.pid = sp.modid');
 
   $cond = db_and();
+  $cond->condition('sbpp_p.perm', 1);
+
   return $cond;
 }
 
@@ -118,9 +120,8 @@ function sbp_paths_sbp_details($id, $environment, $keys = NULL) {
 
   $code = drupal_strtolower($item->snippet);
   if ($code == 'yes' && $keys) {
-    $content = search_by_page_page_content($item->page_path);
-    $content = search_by_page_strip_tags($content, $environment);
-    if (!is_int($content)) {
+    $content = search_by_page_stored_page_content('sbp_paths', $id, $environment);
+    if ($content) {
       $ret['snippet'] = search_by_page_excerpt($keys, $content);
     }
   }

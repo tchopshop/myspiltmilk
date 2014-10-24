@@ -77,7 +77,6 @@ function freepager_preprocess_views_freepager(&$vars) {
     return;
   }
 
-  $rendered_result = $view->style_plugin->render_fields($view->result);
   $fields = array_keys(freepager_settings());
   foreach($fields as $field) {
     $field_names[$field] = $view->display_handler->options[$field];
@@ -86,10 +85,11 @@ function freepager_preprocess_views_freepager(&$vars) {
 
   // Let's go see if we're looking at a page matching the provided paths.
   $row_number = -1;
-  foreach ($rendered_result as $row => $result) {
-    if ($result[$field_names['path']] == $current_path) {
+  foreach ($view->result as $row => $result) {
+    $rendered_fields = _freepager_render_views_row($view, $row, $field_names['path']);
+    if ($rendered_fields[$field_names['path']] == $current_path) {
       $row_number = $row;
-      continue;
+      break;
     }
   }
 
@@ -110,15 +110,17 @@ function freepager_preprocess_views_freepager(&$vars) {
     }
 
     if ($previous_row_number >= 0) {
-      $vars['previous'] = $rendered_result[$previous_row_number][$field_names['previous']];
-      $vars['previous_linked'] = l($vars['previous'], $rendered_result[$previous_row_number][$field_names['path']], array('html' => TRUE, 'attributes' => array('rel' => 'prev')));
+      $previous_rendered_fields = _freepager_render_views_row($view, $previous_row_number);
+      $vars['previous'] = $previous_rendered_fields[$field_names['previous']];
+      $vars['previous_linked'] = l($vars['previous'], $previous_rendered_fields[$field_names['path']], array('html' => TRUE, 'attributes' => array('rel' => 'prev')));
     }
   }
 
   // Build the 'current' item.
   if ($field_names['current']) {
-    $vars['current'] = $rendered_result[$row_number][$field_names['current']];
-    $vars['current_linked'] = l($vars['current'], $rendered_result[$row_number][$field_names['path']], array('html' => TRUE));
+    $rendered_fields = _freepager_render_views_row($view, $row_number);
+    $vars['current'] = $rendered_fields[$field_names['current']];
+    $vars['current_linked'] = l($vars['current'], $rendered_fields[$field_names['path']], array('html' => TRUE));
   }
 
   // Build the 'next' item.
@@ -130,8 +132,9 @@ function freepager_preprocess_views_freepager(&$vars) {
     }
 
     if ($next_row_number < $count) {
-      $vars['next'] = $rendered_result[$next_row_number][$field_names['next']];
-      $vars['next_linked'] = l($vars['next'], $rendered_result[$next_row_number][$field_names['path']], array('html' => TRUE, 'attributes' => array('rel' => 'next')));
+      $next_rendered_fields = _freepager_render_views_row($view, $next_row_number);
+      $vars['next'] = $next_rendered_fields[$field_names['next']];
+      $vars['next_linked'] = l($vars['next'], $next_rendered_fields[$field_names['path']], array('html' => TRUE, 'attributes' => array('rel' => 'next')));
     }
   }
 
@@ -159,4 +162,20 @@ function freepager_views_post_render(&$view, &$output, &$cache) {
   if (isset($view->display_handler->no_path_match) && $view->display_handler->no_path_match) {
     $view->result = FALSE;
   }
+}
+
+/**
+ * Renders a particular row in a view.
+ *
+ * @see views_plugin_style::render_fields()
+ */
+function _freepager_render_views_row($view, $row, $upto = NULL) {
+  $rendered_fields = array();
+  foreach (array_keys($view->field) as $id) {
+    $rendered_fields[$id] = $view->field[$id]->theme($view->result[$row]);
+    if (isset($upto) && $id == $upto) {
+      break;
+    }
+  }
+  return $rendered_fields;
 }
