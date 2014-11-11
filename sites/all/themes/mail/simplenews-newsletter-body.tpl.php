@@ -1,4 +1,3 @@
-
 <table style="display: inline-table;" bgcolor="#91bfe2" border="0" cellpadding="0" cellspacing="0" width="600">
   <tr>
    <td><img src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="409" height="1" alt="" /></td>
@@ -17,7 +16,6 @@
    <td><a href="http://www.facebook.com/MySpiltMilk"><img name="facebook" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/facebook-email.jpg" width="46" height="42" id="facebook" alt="" /></a></td>
    <td><a href="http://vimeo.com/myspiltmilk"><img name="vimeo" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/vimeo-email.jpg" width="46" height="42" id="vimeo" alt="" /></a></td>
    <td><a href="http://www.youtube.com/user/myspiltmilknola"><img name="youtube" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/youtube-email.jpg" width="52" height="42" id="youtube" alt="" /></a></td>
-   <td><img style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="42" alt="" /></td>
   </tr>
   <tr>
    <td colspan="4"><img name="newsletter_r3_c2" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottom-spacer.jpg" width="191" height="14" id="newsletter_r3_c2" alt="" /></td>
@@ -27,8 +25,6 @@
   </tr>
   <tr>
    <td colspan="5">
-
-
 	<table width="600" border="0" bgcolor="#91bfe2" cellspacing="0" cellpadding="0">
 		<tbody>
 			<tr>
@@ -54,13 +50,9 @@
 			</tr>
 		</tbody>
 	</table>
-
-
-
-	
-	   </td>
+   </td>
   </tr>
   <tr>
-   <td colspan="5"><img name="bottomslice" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottomslice.jpg" width="600" height="18" id="bottomslice" alt="" /></td>
+     <td colspan="5"><img name="bottomslice" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottomslice.jpg" width="600" height="18" id="bottomslice" alt="" /></td>
   </tr>
 </table>
