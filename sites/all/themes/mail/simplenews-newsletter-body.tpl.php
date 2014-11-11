@@ -25,7 +25,7 @@
   </tr>
   <tr>
    <td colspan="5">
-	<table width="600" border="0" bgcolor="#91bfe2" cellspacing="0" cellpadding="0">
+	<table style="display: inline-table;" bgcolor="#91bfe2" border="0" cellpadding="0" cellspacing="0" width="601">
 		<tbody>
 			<tr>
 				<td>
