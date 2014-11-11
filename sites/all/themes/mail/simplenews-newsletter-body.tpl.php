@@ -6,13 +6,11 @@
    <td><img src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="46" height="1" alt="" /></td>
    <td><img src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="46" height="1" alt="" /></td>
    <td><img src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="52" height="1" alt="" /></td>
-   <td><img src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="1" alt="" /></td>
   </tr>
 
   <tr>
    <td rowspan="3"><a href="http://myspiltmilk.com"><img name="header" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/header.jpg" width="409" height="73" id="header" alt="" /></a></td>
    <td colspan="4"><img name="newsletter_r1_c2" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/top-spacer.jpg" width="191" height="17" id="newsletter_r1_c2" alt="" /></td>
-   <td><img style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="17" alt="" /></td>
   </tr>
   <tr>
    <td><a href="http://twitter.com/#!/myspiltmilk"><img name="twitter" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/twitter-email.jpg" width="47" height="42" id="twitter" alt="" /></a></td>
@@ -23,14 +21,12 @@
   </tr>
   <tr>
    <td colspan="4"><img name="newsletter_r3_c2" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottom-spacer.jpg" width="191" height="14" id="newsletter_r3_c2" alt="" /></td>
-   <td><img style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="14" alt="" /></td>
   </tr>
   <tr>
    <td colspan="5"><a href="http://myspiltmilk.com"><img name="puddle" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/puddle.jpg" width="600" height="80" id="puddle" alt="" /></a></td>
-   <td><img style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="80" alt="" /></td>
   </tr>
   <tr>
-   <td colspan="6">
+   <td colspan="5">
 
 
 	<table width="600" border="0" bgcolor="#91bfe2" cellspacing="0" cellpadding="0">
@@ -63,10 +59,8 @@
 
 	
 	   </td>
-   <td><img style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="652" alt="" /></td>
   </tr>
   <tr>
-   <td colspan="6"><img name="bottomslice" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottomslice.jpg" width="600" height="18" id="bottomslice" alt="" /></td>
-   <td><img style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="18" alt="" /></td>
+   <td colspan="5"><img name="bottomslice" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottomslice.jpg" width="600" height="18" id="bottomslice" alt="" /></td>
   </tr>
 </table>
