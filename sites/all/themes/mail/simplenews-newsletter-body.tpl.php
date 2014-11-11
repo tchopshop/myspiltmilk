@@ -30,7 +30,7 @@
    <td><img style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="80" alt="" /></td>
   </tr>
   <tr>
-   <td colspan="5">
+   <td colspan="6">
 
 
 	<table width="600" border="0" bgcolor="#91bfe2" cellspacing="0" cellpadding="0">
@@ -66,7 +66,7 @@
    <td><img style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="652" alt="" /></td>
   </tr>
   <tr>
-   <td colspan="5"><img name="bottomslice" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottomslice.jpg" width="600" height="18" id="bottomslice" alt="" /></td>
+   <td colspan="6"><img name="bottomslice" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottomslice.jpg" width="600" height="18" id="bottomslice" alt="" /></td>
    <td><img style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/spacer.gif" width="1" height="18" alt="" /></td>
   </tr>
 </table>
