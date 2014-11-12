@@ -31,6 +31,7 @@
 </td>
 </tr>
 <tr>
-<td colspan="5"><img name="bottomslice" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottomslice.jpg" width="600" height="18" id="bottomslice" alt="" />TEST</td>
+<td colspan="5"><img name="bottomslice" style="display: block;" src="http://myspiltmilk.com/sites/all/themes/spiltmilk/images/bottomslice.jpg" width="600" height="18" id="bottomslice" alt="" /></td>
+<td>TEST</td>
 </tr>
 </table>
