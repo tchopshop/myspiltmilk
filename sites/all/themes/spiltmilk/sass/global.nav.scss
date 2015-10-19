@@ -28,6 +28,7 @@ a {
 // You can target all of these with .nav or div[id$="menu-bar"]
 
 
+/*
 nav#block-system-main-menu {
   clear: both;
   margin: 0;
@@ -42,10 +43,8 @@ nav#block-system-main-menu {
   li, .menu li {
     display: block;
     float: left;
-    clear:left;
     list-style: none;
         border-bottom: 1px dotted silver;
-    width: 100%;
 	&.last {
 		border-bottom: 0;
 		margin-bottom: 30px;
@@ -80,12 +79,13 @@ nav#block-system-main-menu {
     }
   }
 
+
   .block {
     margin-bottom: 0;
   }
 }
 
-
+*/
 
 // Superfish
 //

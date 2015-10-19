@@ -1,16 +1,23 @@
 /** @file Navigation Styling */
-nav#block-system-main-menu { clear: both; margin: 0; }
-nav#block-system-main-menu > .block-inner { margin: 0; }
-nav#block-system-main-menu ul.menu { margin: 0; padding-top: 10px; }
-nav#block-system-main-menu li, nav#block-system-main-menu .menu li { display: block; float: left; clear: left; list-style: none; border-bottom: 1px dotted silver; width: 100%; }
-nav#block-system-main-menu li.last, nav#block-system-main-menu .menu li.last { border-bottom: 0; margin-bottom: 30px; }
-@media screen and (max-width: 548px) { nav#block-system-main-menu li.last, nav#block-system-main-menu .menu li.last { margin-bottom: 10px; } }
-nav#block-system-main-menu li a, nav#block-system-main-menu .menu li a { display: block; white-space: nowrap; font-family: 'Populaire', Helvetica Narrow, Arial Narrow; font-size: 26px; line-height: 1.1; padding-top: 10px; padding-bottom: 10px; }
-nav#block-system-main-menu ul { margin: 0; padding: 0; }
-nav#block-system-main-menu ul.menu { margin: 0; padding: 0; }
-nav#block-system-main-menu ul.menu li { margin: 0; padding: 0; }
-nav#block-system-main-menu .block { margin-bottom: 0; }
+/*
+nav#block-system-main-menu { clear: both; margin: 0; &>.block-inner { 	margin:0; } ul.menu { margin: 0; padding-top: 10px; }
+ li, .menu li { display: block; float: left; list-style: none; border-bottom: 1px dotted silver;
+	&.last {
+		border-bottom: 0;
+		margin-bottom: 30px;
+		@media screen and (max-width:548px) {
+			margin-bottom: 10px;
+		}
+	} }
+ li a, .menu li a { display: block; white-space: nowrap; font-family: 'Populaire', Helvetica Narrow, Arial Narrow; font-size: 26px; line-height: 1.1; padding-top: 10px; padding-bottom: 10px; }
+ ul { margin: 0; padding: 0;
+ &.menu { margin: 0; padding: 0;
+ li { margin: 0; padding: 0; } } }
 
+ .block { margin-bottom: 0; }
+}
+
+*/
 ul.sf-menu { margin-bottom: 0; }
 ul.sf-menu a { border-left: 0; border-top: 0; padding: 0 10px; text-decoration: none; height: 2.5em; line-height: 2.5em; }
 ul.sf-menu li:hover, ul.sf-menu li.sfHover { outline: 0; }
