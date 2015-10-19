@@ -216,10 +216,10 @@ iframe.twitter-share-button {
 	}
 	}
 }
-#block-menu-menu-top-menu {
+#block-menu-menu-top-menu, #block-system-main-menu {
 	margin-top: 10px;
 	position: relative;
-	z-index: 1000;
+	z-index: 50;
 	margin-bottom: 0!important;
 
 	li {
