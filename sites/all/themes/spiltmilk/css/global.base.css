@@ -1,279 +1,70 @@
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\0000381}}
-html {
-  line-height: 1.5;
-  height: 100%;
-  overflow-y: scroll;
-  -webkit-text-size-adjust: 100%;
-  -moz-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  font-family: Arial, Helvetica, sans-serif;
-}
+html { line-height: 1.5; height: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; -ms-text-size-adjust: 100%; font-family: Arial, Helvetica, sans-serif; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\0000392}}
-body {
-  min-height: 100%;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+body { min-height: 100%; -webkit-font-smoothing: antialiased; font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003106}}
-h1, h2, h3, h4, h5, h6,
-h1 img, h2 img, h3 img, h4 img, h5 img, h6 img,
-em, dfn, del, ins,
-a, tbody, tfoot, thead, tr,
-ul, li,
-label, legend,
-figure, figcaption {
-  margin: 0;
-  padding: 0;
-}
+h1, h2, h3, h4, h5, h6, h1 img, h2 img, h3 img, h4 img, h5 img, h6 img, em, dfn, del, ins, a, tbody, tfoot, thead, tr, ul, li, label, legend, figure, figcaption { margin: 0; padding: 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003123}}
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-menu,
-nav,
-section {
-  display: block;
-}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003137}}
-img,
-a img {
-  border: 0;
-}
+img, a img { border: 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003142}}
-p {
-  margin: 0 0 1.5em;
-  padding: 0;
-}
+p { margin: 0 0 1.5em; padding: 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003149}}
-em,
-dfn {
-  font-style: italic;
-}
+em, dfn { font-style: italic; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003154}}
-ins {
-  border-bottom: none;
-  text-decoration: none;
-}
+ins { border-bottom: none; text-decoration: none; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003165}}
-pre,
-code,
-tt,
-samp,
-kbd,
-var {
-  font-size: 1em;
-  font-family: Consolas, "Lucida Console", Menlo, Monaco, "DejaVu Sans Mono", monospace, sans-serif;
-}
+pre, code, tt, samp, kbd, var { font-size: 1em; font-family: Consolas, "Lucida Console", Menlo, Monaco, "DejaVu Sans Mono", monospace, sans-serif; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003172}}
-blockquote,
-q {
-  font-style: italic;
-  quotes: "" "";
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003175}}
-blockquote:before, blockquote:after,
-q:before,
-q:after {
-  content: "";
-}
+blockquote, q { font-style: italic; quotes: "" ""; }
+blockquote:before, blockquote:after, q:before, q:after { content: ""; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003181}}
-blockquote {
-  margin: 0 0 1.5em;
-  padding: 0 0 0 40px;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003185}}
-blockquote p {
-  margin: 0;
-}
+blockquote { margin: 0 0 1.5em; padding: 0 0 0 40px; }
+blockquote p { margin: 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003194}}
-strong,
-dfn,
-caption,
-th {
-  font-weight: 700;
-}
+strong, dfn, caption, th { font-weight: 700; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003200}}
-ul,
-ol {
-  margin: 0 0 1.5em 40px;
-  padding: 0;
-}
+ul, ol { margin: 0 0 1.5em 40px; padding: 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003208}}
-.item-list ul, .item-list ol {
-  margin: 0 0 0 15px;
-  padding: 0;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003213}}
-.item-list ul li {
-  margin: 0;
-  padding: 0;
-}
+.item-list ul, .item-list ol { margin: 0 0 0 15px; padding: 0; }
+.item-list ul li { margin: 0; padding: 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003223}}
-ul ul, .block ul ul, .item-list ul ul, ul ol, .block ul ol, .item-list ul ol, ol ul, .block ol ul, .item-list ol ul, ol ol, .block ol ol, .item-list ol ol {
-  margin-bottom: 0;
-}
+ul ul, .block ul ul, .item-list ul ul, ul ol, .block ul ol, .item-list ul ol, ol ul, .block ol ul, .item-list ol ul, ol ol, .block ol ol, .item-list ol ol { margin-bottom: 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003230}}
-ul {
-  list-style-type: disc;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003233}}
-ul ul ul {
-  list-style-type: square;
-}
+ul { list-style-type: disc; }
+ul ul ul { list-style-type: square; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003239}}
-ol {
-  list-style-type: decimal;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003242}}
-ol ol {
-  list-style-type: lower-alpha;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003246}}
-ol ol ol {
-  list-style-type: lower-roman;
-}
+ol { list-style-type: decimal; }
+ol ol { list-style-type: lower-alpha; }
+ol ol ol { list-style-type: lower-roman; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003253}}
-ul ul {
-  list-style-type: circle;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003256}}
-ul ul ul ul {
-  list-style-type: circle;
-}
+ul ul { list-style-type: circle; }
+ul ul ul ul { list-style-type: circle; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003262}}
-dt {
-  font-weight: 700;
-}
+dt { font-weight: 700; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003267}}
-dd {
-  margin: 0 0 1.5em 40px;
-}
+dd { margin: 0 0 1.5em 40px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003280}}
-img {
-  max-width: 100%;
-  height: auto;
-  -ms-interpolation-mode: bicubic;
-}
+img { max-width: 100%; height: auto; -ms-interpolation-mode: bicubic; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003290}}
-embed,
-object,
-video {
-  max-width: 100%;
-}
+embed, object, video { max-width: 100%; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003300}}
-.lt-ie9 img,
-.lt-ie9 object,
-.lt-ie9 embed,
-.lt-ie9 video {
-  max-width: none;
-}
+.lt-ie9 img, .lt-ie9 object, .lt-ie9 embed, .lt-ie9 video { max-width: none; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003313}}
-#map img,
-.gmap img,
-.view-gmap img,
-.openlayers-map img,
-#getlocations_map_canvas img,
-#locationmap_map img,
-.geofieldMap img {
-  max-width: none !important;
-}
+#map img, .gmap img, .view-gmap img, .openlayers-map img, #getlocations_map_canvas img, #locationmap_map img, .geofieldMap img { max-width: none !important; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003319}}
-svg:not(:root) {
-  overflow: hidden;
-}
+svg:not(:root) { overflow: hidden; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003327}}
-audio,
-canvas,
-video {
-  display: inline-block;
-  *display: inline;
-  *zoom: 1;
-}
+audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003335}}
-audio:not([controls]) {
-  display: none;
-}
+audio:not([controls]) { display: none; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003348}}
-header[role=banner],
-.content-inner,
-.nav,
-.region-sidebar-first,
-.region-sidebar-second,
-.region-secondary-content,
-.region-tertiary-content,
-.region-footer {
-  overflow: visible;
-  word-wrap: break-word;
-}
+header[role=banner], .content-inner, .nav, .region-sidebar-first, .region-sidebar-second, .region-secondary-content, .region-tertiary-content, .region-footer { overflow: visible; word-wrap: break-word; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003355}}
-.element-invisible {
-  border: 0;
-  clip: rect(1px 1px 1px 1px);
-  clip: rect(1px, 1px, 1px, 1px);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute !important;
-  width: 1px;
-}
+.element-invisible { border: 0; clip: rect(1px 1px 1px 1px); clip: rect(1px, 1px, 1px, 1px); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute !important; width: 1px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003368}}
-.element-invisible.element-focusable:active,
-.element-invisible.element-focusable:focus {
-  clip: auto;
-  height: auto;
-  margin: 0;
-  overflow: visible;
-  position: static !important;
-  width: auto;
-}
+.element-invisible.element-focusable:active, .element-invisible.element-focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static !important; width: auto; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003377}}
-.offscreen {
-  position: absolute;
-  top: -99999em;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  outline: 0;
-}
+.offscreen { position: absolute; top: -99999em; width: 1px; height: 1px; overflow: hidden; outline: 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.base\.scss}line{font-family:\00003386}}
-.element-hidden {
-  display: none;
-}
+.element-hidden { display: none; }

@@ -218,6 +218,8 @@ iframe.twitter-share-button {
 }
 #block-menu-menu-top-menu {
 	margin-top: 10px;
+	position: relative;
+	z-index: 1000;
 
 	li {
 	float: left;

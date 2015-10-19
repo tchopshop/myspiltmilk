@@ -1,291 +1,71 @@
-/*
- * @file
- * Print Styles
- * This probably needs work, but it's a good starting point.
- */
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\0000311}}
-body {
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  line-height: 1.4;
-  word-spacing: 1.1pt;
-  letter-spacing: 0.2pt;
-  font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-  color: black;
-  background: none;
-  font-size: 11pt;
-}
+/* @file Print Styles This probably needs work, but it's a good starting point. */
+body { width: 100% !important; margin: 0 !important; padding: 0 !important; line-height: 1.4; word-spacing: 1.1pt; letter-spacing: 0.2pt; font-family: Verdana, Geneva, Arial, Helvetica, sans-serif; color: black; background: none; font-size: 11pt; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\0000326}}
-a {
-  background: transparent;
-  font-weight: 700;
-  text-decoration: underline;
-  color: #0000ee;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\0000334}}
-a[href^="http://"]:after, a[href^="http://"]:visited:after {
-  content: "(" attr(href) ")";
-  font-size: 10pt;
-}
+a { background: transparent; font-weight: 700; text-decoration: underline; color: #0000ee; }
+a[href^="http://"]:after, a[href^="http://"]:visited:after { content: "(" attr(href) ")"; font-size: 10pt; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\0000367}}
-div[id*="wrapper"],
-[class*="title"],
-[class*="inner"],
-header,
-footer,
-#branding,
-#container,
-#columns,
-.columns-inner,
-#content-column,
-.content-inner,
-.region,
-.region-header,
-.region-content,
-.article,
-.article-title,
-.article-content,
-.comment,
-.comment-title,
-.comment-content,
-.block,
-.block-inner,
-.block-title,
-.block-content,
-table,
-table * {
-  background: none !important;
-}
+div[id*="wrapper"], [class*="title"], [class*="inner"], header, footer, #branding, #container, #columns, .columns-inner, #content-column, .content-inner, .region, .region-header, .region-content, .article, .article-title, .article-content, .comment, .comment-title, .comment-content, .block, .block-inner, .block-title, .block-content, table, table * { background: none !important; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\0000388}}
-.sidebar,
-#breadcrumb,
-.nav,
-.field-type-taxonomy-term-reference,
-ul.links,
-.feed-icon,
-.poll .bar,
-.poll .foreground,
-.comment-form,
-#comment-form,
-.book-navigation,
-.tabs,
-.action-links,
-.pager,
-.messages,
-.help {
-  display: none;
-}
+.sidebar, #breadcrumb, .nav, .field-type-taxonomy-term-reference, ul.links, .feed-icon, .poll .bar, .poll .foreground, .comment-form, #comment-form, .book-navigation, .tabs, .action-links, .pager, .messages, .help { display: none; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\0000394}}
-#content {
-  display: block !important;
-}
+#content { display: block !important; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\0000399}}
-#header {
-  margin-bottom: 20px;
-}
+#header { margin-bottom: 20px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003104}}
-.content-inner {
-  margin: 0 !important;
-  padding: 0 !important;
-}
+.content-inner { margin: 0 !important; padding: 0 !important; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003116}}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #333333;
-  margin: 0;
-  padding: 0;
-  line-height: 1;
-}
+h1, h2, h3, h4, h5, h6 { color: #333333; margin: 0; padding: 0; line-height: 1; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003124}}
-h1 {
-  font-size: 14pt;
-}
+h1 { font-size: 14pt; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003129}}
-h2 {
-  font-size: 13pt;
-}
+h2 { font-size: 13pt; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003134}}
-h3 {
-  font-size: 12pt;
-}
+h3 { font-size: 12pt; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003141}}
-h4,
-h5,
-h6 {
-  font-size: 11pt;
-}
+h4, h5, h6 { font-size: 11pt; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003152}}
-h1 a,
-h2 a,
-h3 a,
-h4 a,
-h5 a,
-h6 a,
-#site-name a,
-#site-slogan {
-  text-decoration: none !important;
-  color: #333333;
-}
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, #site-name a, #site-slogan { text-decoration: none !important; color: #333333; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003160}}
-hgroup a:link, hgroup a:visited {
-  text-decoration: none;
-}
+hgroup a:link, hgroup a:visited { text-decoration: none; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003166}}
-#page-title {
-  margin-top: 20px;
-}
+#page-title { margin-top: 20px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003176}}
-pre,
-code,
-tt,
-samp,
-kbd,
-var {
-  font-size: 10pt;
-  font-family: Consolas, "Lucida Console", Menlo, Monaco, "DejaVu Sans Mono", monospace, sans-serif;
-}
+pre, code, tt, samp, kbd, var { font-size: 10pt; font-family: Consolas, "Lucida Console", Menlo, Monaco, "DejaVu Sans Mono", monospace, sans-serif; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003182}}
-blockquote {
-  margin: 20px;
-  padding: 10px;
-  font-size: 10pt;
-  font-style: italic;
-  background: #eeeeee;
-}
+blockquote { margin: 20px; padding: 10px; font-size: 10pt; font-style: italic; background: #eeeeee; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003191}}
-hr {
-  background-color: #666666;
-}
+hr { background-color: #666666; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003197}}
-#header {
-  padding-bottom: 20px;
-}
+#header { padding-bottom: 20px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003202}}
-#logo img {
-  padding: 0 10px 0 0;
-  margin: 0 !important;
-  float: none !important;
-}
+#logo img { padding: 0 10px 0 0; margin: 0 !important; float: none !important; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003210}}
-img {
-  float: left;
-  margin: 4px 20px 10px 0;
-  page-break-inside: avoid;
-}
+img { float: left; margin: 4px 20px 10px 0; page-break-inside: avoid; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003217}}
-a img {
-  border: none;
-}
+a img { border: none; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003223}}
-table {
-  margin: 1px;
-  text-align: left;
-}
+table { margin: 1px; text-align: left; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003229}}
-th {
-  border-bottom: 1px solid #333333;
-  font-weight: 700;
-}
+th { border-bottom: 1px solid #333333; font-weight: 700; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003235}}
-td {
-  border-bottom: 1px solid #333333;
-}
+td { border-bottom: 1px solid #333333; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003241}}
-th,
-td {
-  padding: 4px 10px 4px 0;
-}
+th, td { padding: 4px 10px 4px 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003246}}
-tfoot {
-  font-style: italic;
-}
+tfoot { font-style: italic; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003251}}
-caption {
-  margin-bottom: 10px;
-  text-align: left;
-}
+caption { margin-bottom: 10px; text-align: left; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003257}}
-thead {
-  display: table-header-group;
-}
+thead { display: table-header-group; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003262}}
-tr {
-  page-break-inside: avoid;
-}
+tr { page-break-inside: avoid; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003268}}
-form {
-  margin-bottom: 10px;
-}
+form { margin-bottom: 10px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003276}}
-.poll .text,
-.poll .percent,
-.poll .total {
-  text-align: left;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003279}}
-.poll form {
-  margin-bottom: 0;
-}
+.poll .text, .poll .percent, .poll .total { text-align: left; }
+.poll form { margin-bottom: 0; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003287}}
-.node,
-.comment {
-  margin-bottom: 20px;
-  overflow: hidden;
-  page-break-inside: avoid;
-}
+.node, .comment { margin-bottom: 20px; overflow: hidden; page-break-inside: avoid; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003293}}
-.submitted {
-  color: #666666;
-  text-decoration: none;
-  font-size: 9pt;
-  font-weight: 400;
-  margin: 0;
-  padding: 0;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/print\.scss}line{font-family:\00003301}}
-.submitted a {
-  color: #666666;
-  text-decoration: none;
-  font-size: 9pt;
-  font-weight: 400;
-  margin: 0;
-  padding: 0;
-}
+.submitted { color: #666666; text-decoration: none; font-size: 9pt; font-weight: 400; margin: 0; padding: 0; }
+.submitted a { color: #666666; text-decoration: none; font-size: 9pt; font-weight: 400; margin: 0; padding: 0; }

@@ -1,116 +1,25 @@
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000310}}
-#comments {
-  margin: 1.5em 0;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000316}}
-#comments h2.comment-form {
-  font-size: 36px;
-  text-align: left;
-  padding-bottom: 0;
-  color: #1781B8;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000322}}
-#comments .all-comments {
-  margin-bottom: 50px;
-}
+#comments { margin: 1.5em 0; }
+#comments h2.comment-form { font-size: 36px; text-align: left; padding-bottom: 0; color: #1781B8; }
+#comments .all-comments { margin-bottom: 50px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000328}}
-.comment {
-  margin-bottom: 20px;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000330}}
-.comment .content {
-  background-color: #F2F2F2;
-  padding-bottom: 10px;
-  -webkit-transition-duration: 0.2s;
-  -moz-transition-duration: 0.2s;
-  transition-duration: 0.2s;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  border-radius: 4px;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000339}}
-.comment .content .content-body {
-  padding: 15px 15px 0;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000342}}
-.comment .content .links {
-  text-align: right;
-  margin: 0 10px 0 0;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000345}}
-.comment .content .links li {
-  margin-left: 5px;
-  display: inline;
-  list-style-type: none;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000349}}
-.comment .content .links li a {
-  background: rgba(77, 77, 77, 0.3);
-  -webkit-transition-duration: 0.2s;
-  -moz-transition-duration: 0.2s;
-  transition-duration: 0.2s;
-  padding: 6px 10px 5px;
-  font-size: .75em;
-  line-height: 1.25em;
-  background-color: #CCC;
-  font-weight: bold;
-  color: white;
-  text-transform: uppercase;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  border-radius: 4px;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000364}}
-.comment .content .links li a:hover {
-  text-decoration: none;
-  background-color: #4d4d4d;
-  background: #4d4d4d;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\0000373}}
-.comment div.arrow {
-  width: 26px;
-  height: 23px;
-  float: left;
-  background-repeat: no-repeat;
-  background-image: url(../images/comment-arrow.png);
-  margin: 0px 10px 0px 30px;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\00003104}}
-.comment .submitted {
-  line-height: 3em;
-}
+.comment { margin-bottom: 20px; }
+.comment .content { background-color: #F2F2F2; padding-bottom: 10px; -webkit-transition-duration: 0.2s; -moz-transition-duration: 0.2s; transition-duration: 0.2s; -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px; }
+.comment .content .content-body { padding: 15px 15px 0; }
+.comment .content .links { text-align: right; margin: 0 10px 0 0; }
+.comment .content .links li { margin-left: 5px; display: inline; list-style-type: none; }
+.comment .content .links li a { background: rgba(77, 77, 77, 0.3); -webkit-transition-duration: 0.2s; -moz-transition-duration: 0.2s; transition-duration: 0.2s; padding: 6px 10px 5px; font-size: .75em; line-height: 1.25em; background-color: #CCC; font-weight: bold; color: white; text-transform: uppercase; -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px; }
+.comment .content .links li a:hover { text-decoration: none; background-color: #4d4d4d; background: #4d4d4d; }
+.comment div.arrow { width: 26px; height: 23px; float: left; background-repeat: no-repeat; background-image: url(../images/comment-arrow.png); margin: 0px 10px 0px 30px; }
+.comment .submitted { line-height: 3em; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\00003131}}
-.comment-preview {
-  background-color: #ffffea;
-}
+.comment-preview { background-color: #ffffea; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\00003170}}
-.new {
-  color: #c00;
-}
+.new { color: #c00; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\00003180}}
-.comment-form .form-item-name, .comment-form .form-item-mail {
-  float: left;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\00003182}}
-.comment-form .form-item-name input, .comment-form .form-item-mail input {
-  width: 90%;
-}
+.comment-form .form-item-name, .comment-form .form-item-mail { float: left; }
+.comment-form .form-item-name input, .comment-form .form-item-mail input { width: 90%; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\00003186}}
-.comment-form .form-item-name {
-  width: 40%;
-}
+.comment-form .form-item-name { width: 40%; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\00003189}}
-.comment-form .form-item-mail {
-  width: 60%;
-}
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/elena\/Sites\/myspiltmilk\/sites\/all\/themes\/spiltmilk\/sass\/global\.comments\.scss}line{font-family:\00003191}}
-.comment-form .form-item-mail input {
-  width: 97%;
-  margin-bottom: 0;
-}
+.comment-form .form-item-mail { width: 60%; }
+.comment-form .form-item-mail input { width: 97%; margin-bottom: 0; }
