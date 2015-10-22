@@ -294,6 +294,10 @@ ul.action-links li a { padding-left: 15px; background: url(../images/add.png) no
 
 .field-name-realname-author { font-family: 'Populaire', Helvetica Narrow, Arial Narrow; font-size: 28px; margin-bottom: 20px; display: block; }
 
+.field-name-field-author-info { background: white; padding: 20px; -webkit-border-radius: 8px; /* Saf3-4, iOS 1-3.2, Android ≤1.6 */ border-radius: 8px; margin-bottom: 20px; }
+
+.author-photo { float: right; padding-left: 10px; }
+
 .field-name-field-tags ul { display: inline; }
 .field-name-field-tags ul li { list-style: none; }
 
